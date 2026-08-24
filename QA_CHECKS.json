@@ -1,0 +1,9 @@
+{
+  "index_exists": true,
+  "manifest_valid": true,
+  "service_worker_exists": true,
+  "icons_exist": true,
+  "local_storage": true,
+  "export_import": true,
+  "bilingual": true
+}
