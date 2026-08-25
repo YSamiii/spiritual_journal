@@ -1,9 +1,9 @@
 {
-  "syntax_ok": true,
-  "cropper": true,
-  "preprocess": true,
-  "high_precision": true,
-  "fallback": true,
-  "filters": true,
-  "sorting": true
+  "javascript_syntax_ok": true,
+  "renamed_to_bible_order": true,
+  "66_book_order": true,
+  "chapter_verse_numeric_sort": true,
+  "chinese_number_support": true,
+  "english_book_support": true,
+  "unparsed_last": true
 }

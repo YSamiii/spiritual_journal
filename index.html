@@ -146,7 +146,7 @@
     <div class="filterbar">
       <select id="verseSourceFilter" onchange="renderVerses()"><option value="all">全部来源</option><option value="ocr">拍照识别</option><option value="manual">手动添加</option></select>
       <select id="verseNoteFilter" onchange="renderVerses()"><option value="all">全部笔记</option><option value="with">有笔记</option><option value="without">无笔记</option></select>
-      <select id="verseSort" onchange="renderVerses()"><option value="newest">最近添加</option><option value="oldest">最早添加</option><option value="updated">最近修改</option><option value="reference">按出处</option></select>
+      <select id="verseSort" onchange="renderVerses()"><option value="newest">最近添加</option><option value="oldest">最早添加</option><option value="updated">最近修改</option><option value="reference">按圣经顺序</option></select>
     </div>
     <div class="list" id="verseList"></div>
   </section>
@@ -385,10 +385,102 @@ function renderHome(){
 }
 function journalCard(j){let summary=j.oneLine||j.gratitude||j.events||j.scripture||'—'; return `<div class="card" onclick="openJournal('${j.id}')"><div class="row"><div class="card-title">${j.favorite?'★ ':''}${fmtDate(j.date)}</div><span class="meta">${esc(j.scriptureRef||'')}</span></div><div>${lines(summary).slice(0,300)}</div></div>`}
 function renderPrayers(){let f=document.getElementById('prayerFilter')?.value||'all'; let xs=[...db.prayers].filter(p=>f==='all'||p.status===f).sort((a,b)=>(b.updatedAt||'').localeCompare(a.updatedAt||'')); document.getElementById('prayerList').innerHTML=xs.length?xs.map(p=>`<div class="card" onclick="openPrayer('${p.id}')"><div class="row"><div class="card-title">${esc(p.title||'—')}</div><span class="status">${tr(p.status)}</span></div><div class="meta">${esc(p.category||'')}</div>${p.notes?`<div style="margin-top:8px">${lines(p.notes)}</div>`:''}</div>`).join(''):`<div class="empty">${tr('noPrayers')}</div>`}
+
+const BIBLE_BOOK_ORDER = [
+'创世记','出埃及记','利未记','民数记','申命记','约书亚记','士师记','路得记','撒母耳记上','撒母耳记下',
+'列王纪上','列王纪下','历代志上','历代志下','以斯拉记','尼希米记','以斯帖记','约伯记','诗篇','箴言',
+'传道书','雅歌','以赛亚书','耶利米书','耶利米哀歌','以西结书','但以理书','何西阿书','约珥书','阿摩司书',
+'俄巴底亚书','约拿书','弥迦书','那鸿书','哈巴谷书','西番雅书','哈该书','撒迦利亚书','玛拉基书',
+'马太福音','马可福音','路加福音','约翰福音','使徒行传','罗马书','哥林多前书','哥林多后书','加拉太书',
+'以弗所书','腓立比书','歌罗西书','帖撒罗尼迦前书','帖撒罗尼迦后书','提摩太前书','提摩太后书','提多书',
+'腓利门书','希伯来书','雅各书','彼得前书','彼得后书','约翰一书','约翰二书','约翰三书','犹大书','启示录'
+];
+
+const EN_BOOK_MAP = {
+'genesis':'创世记','exodus':'出埃及记','leviticus':'利未记','numbers':'民数记','deuteronomy':'申命记',
+'joshua':'约书亚记','judges':'士师记','ruth':'路得记','1 samuel':'撒母耳记上','2 samuel':'撒母耳记下',
+'1 kings':'列王纪上','2 kings':'列王纪下','1 chronicles':'历代志上','2 chronicles':'历代志下',
+'ezra':'以斯拉记','nehemiah':'尼希米记','esther':'以斯帖记','job':'约伯记','psalm':'诗篇','psalms':'诗篇',
+'proverbs':'箴言','ecclesiastes':'传道书','song of songs':'雅歌','song of solomon':'雅歌','isaiah':'以赛亚书',
+'jeremiah':'耶利米书','lamentations':'耶利米哀歌','ezekiel':'以西结书','daniel':'但以理书','hosea':'何西阿书',
+'joel':'约珥书','amos':'阿摩司书','obadiah':'俄巴底亚书','jonah':'约拿书','micah':'弥迦书','nahum':'那鸿书',
+'habakkuk':'哈巴谷书','zephaniah':'西番雅书','haggai':'哈该书','zechariah':'撒迦利亚书','malachi':'玛拉基书',
+'matthew':'马太福音','mark':'马可福音','luke':'路加福音','john':'约翰福音','acts':'使徒行传','romans':'罗马书',
+'1 corinthians':'哥林多前书','2 corinthians':'哥林多后书','galatians':'加拉太书','ephesians':'以弗所书',
+'philippians':'腓立比书','colossians':'歌罗西书','1 thessalonians':'帖撒罗尼迦前书','2 thessalonians':'帖撒罗尼迦后书',
+'1 timothy':'提摩太前书','2 timothy':'提摩太后书','titus':'提多书','philemon':'腓利门书','hebrews':'希伯来书',
+'james':'雅各书','1 peter':'彼得前书','2 peter':'彼得后书','1 john':'约翰一书','2 john':'约翰二书','3 john':'约翰三书',
+'jude':'犹大书','revelation':'启示录'
+};
+
+function chineseNumberToInt(s){
+  if(s==null || s==='') return null;
+  s=String(s).trim();
+  if(/^\d+$/.test(s)) return parseInt(s,10);
+  const digit={'零':0,'〇':0,'一':1,'二':2,'两':2,'三':3,'四':4,'五':5,'六':6,'七':7,'八':8,'九':9};
+  if(s==='十') return 10;
+  let total=0, current=0, seen=false;
+  for(const ch of s){
+    if(ch in digit){ current=digit[ch]; seen=true; }
+    else if(ch==='十'){ total += (current||1)*10; current=0; seen=true; }
+    else if(ch==='百'){ total += (current||1)*100; current=0; seen=true; }
+    else return null;
+  }
+  return seen ? total+current : null;
+}
+
+function normalizeBookName(ref){
+  const raw=String(ref||'').trim();
+  for(const b of BIBLE_BOOK_ORDER){
+    if(raw.includes(b)) return b;
+  }
+  const lower=raw.toLowerCase().replace(/[.]/g,'').replace(/\s+/g,' ').trim();
+  const names=Object.keys(EN_BOOK_MAP).sort((a,b)=>b.length-a.length);
+  for(const name of names){
+    if(lower.startsWith(name+' ') || lower===name || lower.includes(name+' ')) return EN_BOOK_MAP[name];
+  }
+  return null;
+}
+
+function parseBibleReference(ref){
+  const raw=String(ref||'').trim();
+  if(!raw) return null;
+  const book=normalizeBookName(raw);
+  if(!book) return null;
+
+  // Chinese forms: 马太福音十八章19节 / 马太福音 18章19节 / 马太福音 18:19
+  let m=raw.match(/([零〇一二两三四五六七八九十百\d]+)\s*章\s*([零〇一二两三四五六七八九十百\d]+)\s*节?/);
+  if(!m) m=raw.match(/([零〇一二两三四五六七八九十百\d]+)\s*[:：]\s*([零〇一二两三四五六七八九十百\d]+)/);
+  if(!m){
+    // English/numeric fallback after book name
+    m=raw.match(/(\d{1,3})\s*[:：]\s*(\d{1,3})/);
+  }
+  if(!m) return {book,bookIndex:BIBLE_BOOK_ORDER.indexOf(book),chapter:999,verse:999,raw};
+
+  const chapter=chineseNumberToInt(m[1]);
+  const verse=chineseNumberToInt(m[2]);
+  if(chapter==null || verse==null) return {book,bookIndex:BIBLE_BOOK_ORDER.indexOf(book),chapter:999,verse:999,raw};
+
+  return {book,bookIndex:BIBLE_BOOK_ORDER.indexOf(book),chapter,verse,raw};
+}
+
+function compareBibleReference(aRef,bRef){
+  const a=parseBibleReference(aRef), b=parseBibleReference(bRef);
+  if(a && b){
+    if(a.bookIndex!==b.bookIndex) return a.bookIndex-b.bookIndex;
+    if(a.chapter!==b.chapter) return a.chapter-b.chapter;
+    if(a.verse!==b.verse) return a.verse-b.verse;
+    return String(a.raw).localeCompare(String(b.raw),lang()==='zh'?'zh-CN':'en');
+  }
+  if(a) return -1;
+  if(b) return 1;
+  return String(aRef||'').localeCompare(String(bRef||''),lang()==='zh'?'zh-CN':'en');
+}
+
 function renderVerses(){
   const q=(document.getElementById('verseSearch')?.value||'').toLowerCase(),sf=document.getElementById('verseSourceFilter')?.value||'all',nf=document.getElementById('verseNoteFilter')?.value||'all',sort=document.getElementById('verseSort')?.value||'newest';
   let xs=[...db.verses].filter(v=>{const src=v.source||'manual',has=!!String(v.reflection||'').trim();return [v.text,v.reference,v.tags,v.reflection].join(' ').toLowerCase().includes(q)&&(sf==='all'||src===sf)&&(nf==='all'||(nf==='with'&&has)||(nf==='without'&&!has))});
-  xs.sort((a,b)=>sort==='oldest'?(a.createdAt||'').localeCompare(b.createdAt||''):sort==='updated'?(b.updatedAt||'').localeCompare(a.updatedAt||''):sort==='reference'?String(a.reference||'').localeCompare(String(b.reference||''),lang()==='zh'?'zh-CN':'en'):(b.createdAt||'').localeCompare(a.createdAt||''));
+  xs.sort((a,b)=>sort==='oldest'?(a.createdAt||'').localeCompare(b.createdAt||''):sort==='updated'?(b.updatedAt||'').localeCompare(a.updatedAt||''):sort==='reference'?compareBibleReference(a.reference,b.reference):(b.createdAt||'').localeCompare(a.createdAt||''));
   document.getElementById('verseList').innerHTML=xs.length?xs.map(v=>`<div class="card" onclick="openVerse('${v.id}')"><div class="quote">${lines(v.text||'—')}</div><div class="meta" style="margin-top:8px">${esc(v.reference||'')}</div><div>${(v.tags||'').split(',').filter(Boolean).map(t=>`<span class="tag">${esc(t.trim())}</span>`).join('')}</div>${v.reflection?`<div style="margin-top:10px">${lines(v.reflection)}</div>`:''}</div>`).join(''):`<div class="empty">${tr('noVerses')}</div>`;
 }
 function renderReview(){if(reviewMode==='calendar'){renderCalendar();return} let q=(document.getElementById('reviewSearch')?.value||'').toLowerCase();let xs=[...db.journals].filter(j=>Object.values(j).join(' ').toLowerCase().includes(q)).sort((a,b)=>b.date.localeCompare(a.date));document.getElementById('timeline').innerHTML=xs.length?xs.map(j=>journalCard(j)).join(''):`<div class="empty">${tr('noJournal')}</div>`}
