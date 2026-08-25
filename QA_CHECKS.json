@@ -1,14 +1,9 @@
 {
-  "checks": {
-    "ocr_button_present": true,
-    "camera_input_present": true,
-    "tesseract_v6_loaded": true,
-    "chinese_english_ocr": true,
-    "manual_confirmation_before_save": true,
-    "add_to_today_journal": true,
-    "reference_guessing": true,
-    "keeps_existing_db_key": true,
-    "javascript_syntax_ok": true
-  },
-  "node_output": ""
+  "syntax_ok": true,
+  "cropper": true,
+  "preprocess": true,
+  "high_precision": true,
+  "fallback": true,
+  "filters": true,
+  "sorting": true
 }
