@@ -1,4 +1,4 @@
-const C='spiritual-journal-v0.6-clean-baseline';
+const C='spiritual-journal-v0.6.1-bible-sort-fix';
 const A=[
   './','./index.html','./manifest.json','./styles/app.css',
   './src/core.js',
