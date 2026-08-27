@@ -8,11 +8,7 @@
 <title>属灵日记</title>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<style>
-:root{--bg:#f5f1e7;--card:#fffdf7;--text:#394139;--muted:#7c837a;--accent:#839a80;--border:#d8d2c6;--soft:#eee9dd}
-*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif}
-body{padding-bottom:92px}.app{max-width:760px;margin:auto;padding:18px 16px}.top,.row,.head{display:flex;align-items:center;justify-content:space-between;gap:10px}.top{margin-bottom:18px}.brand{display:flex;gap:12px;align-items:center}.mark{width:46px;height:46px;border-radius:15px;background:var(--card);display:grid;place-items:center;font-size:23px}h1{font-size:24px;margin:0}.sub,.meta,.note{color:var(--muted);font-size:12px}.hero,.card{background:var(--card);border:1px solid var(--border);border-radius:20px}.hero{padding:18px;background:linear-gradient(145deg,var(--card),var(--soft));margin-bottom:12px}.hero h2{font-size:21px;margin:6px 0}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.quick{padding:15px;min-height:105px}.quick h3{margin:7px 0 4px;font-size:15px}.section{margin-top:18px}.head{margin-bottom:9px}.head h2{font-size:18px;margin:0}.list{display:flex;flex-direction:column;gap:9px}.card{padding:14px}.title{font-weight:700}.body{line-height:1.6;margin-top:7px}.quote{border-left:3px solid var(--accent);padding-left:11px;line-height:1.65}.tag{display:inline-block;background:var(--soft);border-radius:999px;font-size:11px;padding:5px 8px;margin:4px 4px 0 0}.empty{text-align:center;color:var(--muted);border:1px dashed var(--border);border-radius:17px;padding:22px}.primary,.secondary,.iconbtn{border-radius:12px;padding:10px 12px;font:inherit}.primary{border:0;background:var(--accent);color:#fff;font-weight:700}.secondary,.iconbtn{border:1px solid var(--border);background:var(--card);color:var(--text)}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.screen{display:none}.screen.active{display:block}.nav{position:fixed;left:0;right:0;bottom:0;background:rgba(245,241,231,.95);border-top:1px solid var(--border);padding:7px 8px calc(7px + env(safe-area-inset-bottom));backdrop-filter:blur(16px)}.navin{max-width:760px;margin:auto;display:grid;grid-template-columns:repeat(5,1fr)}.nav button{border:0;background:transparent;color:var(--muted);font-size:10px;padding:5px}.nav button.active{color:#60765e;font-weight:700}.ni{display:block;font-size:20px}.fab{position:fixed;right:18px;bottom:94px;width:54px;height:54px;border:0;border-radius:17px;background:var(--accent);color:#fff;font-size:28px}.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.42);align-items:flex-end;justify-content:center;z-index:20}.modal.open{display:flex}.sheet{background:var(--bg);width:100%;max-width:760px;max-height:92vh;overflow:auto;border-radius:24px 24px 0 0;padding:18px 16px calc(24px + env(safe-area-inset-bottom))}.sheethead{display:flex;justify-content:space-between;align-items:center;position:sticky;top:-18px;background:var(--bg);padding:18px 0 10px}.field{margin:12px 0}label{display:block;font-size:13px;font-weight:700;margin-bottom:6px}input,textarea,select{width:100%;padding:12px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--text);font:inherit}textarea{min-height:90px}.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.toolbar select{width:auto}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stat{text-align:center}.stat strong{display:block;font-size:22px}.check{display:flex;align-items:flex-start;gap:9px;padding:9px 0}.check input{width:auto;margin-top:4px}@media(min-width:680px){.grid{grid-template-columns:repeat(4,1fr)}}
-</style>
+<link rel="stylesheet" href="styles/app.css">
 </head>
 <body>
 <div class="app">
@@ -78,169 +74,24 @@ body{padding-bottom:92px}.app{max-width:760px;margin:auto;padding:18px 16px}.top
 
 <div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@6/dist/tesseract.min.js"></script>
-<script>
-const KEY='spiritualJournal.v0.1';
-const DEF={version:6,verses:[],questions:[],prayers:[],prayerLogs:[],gratitudes:[],dailySummaries:[],journals:[],settings:{verseSort:'reference',ocrBackendUrl:''}};
-let db=migrate(load());
-let screen='today';
-const BOOKS=['创世记','出埃及记','利未记','民数记','申命记','约书亚记','士师记','路得记','撒母耳记上','撒母耳记下','列王纪上','列王纪下','历代志上','历代志下','以斯拉记','尼希米记','以斯帖记','约伯记','诗篇','箴言','传道书','雅歌','以赛亚书','耶利米书','耶利米哀歌','以西结书','但以理书','何西阿书','约珥书','阿摩司书','俄巴底亚书','约拿书','弥迦书','那鸿书','哈巴谷书','西番雅书','哈该书','撒迦利亚书','玛拉基书','马太福音','马可福音','路加福音','约翰福音','使徒行传','罗马书','哥林多前书','哥林多后书','加拉太书','以弗所书','腓立比书','歌罗西书','帖撒罗尼迦前书','帖撒罗尼迦后书','提摩太前书','提摩太后书','提多书','腓利门书','希伯来书','雅各书','彼得前书','彼得后书','约翰一书','约翰二书','约翰三书','犹大书','启示录'];
 
-function load(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return{}}}
-function today(){let d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
-function uid(){return crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random()}
-function migrate(r){
-  let d={...DEF,...r,settings:{...DEF.settings,...(r.settings||{})}};
-  d.questions=Array.isArray(r.questions)?r.questions:[];
-  d.prayerLogs=Array.isArray(r.prayerLogs)?r.prayerLogs:[];
-  d.gratitudes=Array.isArray(r.gratitudes)?r.gratitudes:[];
-  d.dailySummaries=Array.isArray(r.dailySummaries)?r.dailySummaries:[];
-  d.verses=(Array.isArray(r.verses)?r.verses:[]).map(v=>({...v,date:v.date||(v.createdAt||'').slice(0,10)||today(),note:v.note||v.reflection||''}));
-  d.prayers=(Array.isArray(r.prayers)?r.prayers:[]).map(p=>({...p,details:p.details||p.notes||'',category:p.category||'其他',status:p.status||'ongoing'}));
-  if(Array.isArray(r.journals)) r.journals.forEach(j=>{if(j.date&&!d.dailySummaries.some(x=>x.date===j.date)) d.dailySummaries.push({id:j.id||uid(),date:j.date,reflection:j.reminder||j.guidance||'',oneLine:j.oneLine||'',legacy:true})});
-  return d;
-}
-function save(){localStorage.setItem(KEY,JSON.stringify(db));renderAll()}
-function esc(s=''){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-function lines(s=''){return esc(s).replace(/\n/g,'<br>')}
-function val(id){return document.getElementById(id)?.value||''}
-function fmt(d){return new Intl.DateTimeFormat('zh-CN',{year:'numeric',month:'long',day:'numeric',weekday:'short'}).format(new Date(d+'T12:00:00'))}
-function modal(h){document.getElementById('sheet').innerHTML=h;document.getElementById('modal').classList.add('open');document.body.style.overflow='hidden'}
-function closeModal(){document.getElementById('modal').classList.remove('open');document.body.style.overflow=''}
-document.getElementById('modal').onclick=e=>{if(e.target.id==='modal')closeModal()}
-function go(s){screen=s;document.querySelectorAll('.screen').forEach(x=>x.classList.toggle('active',x.id===s));document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.s===s));renderAll();scrollTo(0,0)}
-function contextAdd(){screen==='questions'?openQuestion():screen==='prayer'?openPrayer():openVerse()}
 
-function openVerse(id){
-  let x=id?db.verses.find(v=>v.id===id):{id:uid(),date:today(),text:'',reference:'',tags:'',note:''};
-  modal(`<div class="sheethead"><h2>${id?'编辑经文':'摘录经文'}</h2><button class="iconbtn" onclick="closeModal()">✕</button></div>
-  <div class="field"><label>日期</label><input id="vd" type="date" value="${x.date}"></div>
-  <div class="field"><label>经文</label><textarea id="vt">${esc(x.text)}</textarea></div>
-  <div class="field"><label>出处</label><input id="vr" value="${esc(x.reference)}"></div>
-  <div class="field"><label>标签</label><input id="vg" value="${esc(x.tags||'')}"></div>
-  <div class="field"><label>为什么摘这句 / 简短笔记</label><textarea id="vn">${esc(x.note||'')}</textarea></div>
-  <button class="primary" onclick="saveVerse('${x.id}')">保存</button>`)
-}
-function saveVerse(id){
-  let old=db.verses.find(v=>v.id===id),x={id,date:val('vd')||today(),text:val('vt').trim(),reference:val('vr').trim(),tags:val('vg').trim(),note:val('vn').trim(),source:old?.source||'manual',createdAt:old?.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()},i=db.verses.findIndex(v=>v.id===id);
-  i>=0?db.verses[i]=x:db.verses.push(x);save();closeModal()
-}
+<script src="src/core.js"></script>
+<script src="src/services/bible-reference.js"></script>
+<script src="src/models/verse.js"></script>
+<script src="src/models/question.js"></script>
+<script src="src/models/prayer.js"></script>
+<script src="src/models/gratitude.js"></script>
+<script src="src/models/daily-summary.js"></script>
+<script src="src/screens/today.js"></script>
+<script src="src/screens/bible.js"></script>
+<script src="src/screens/questions.js"></script>
+<script src="src/screens/prayers.js"></script>
+<script src="src/screens/review.js"></script>
+<script src="src/services/settings.js"></script>
+<script src="src/services/ocr.js"></script>
+<script src="src/services/backup.js"></script>
+<script src="src/app.js"></script>
 
-function openQuestion(id,vid){
-  let x=id?db.questions.find(q=>q.id===id):{id:uid(),date:today(),question:'',verseIds:vid?[vid]:[],status:'open',answer:''};
-  let opts=db.verses.map(v=>`<option value="${v.id}" ${(x.verseIds||[]).includes(v.id)?'selected':''}>${esc(v.reference||v.text.slice(0,28))}</option>`).join('');
-  modal(`<div class="sheethead"><h2>${id?'编辑问题':'记一个问题'}</h2><button class="iconbtn" onclick="closeModal()">✕</button></div>
-  <div class="field"><label>日期</label><input id="qd" type="date" value="${x.date}"></div>
-  <div class="field"><label>我的疑问</label><textarea id="qt">${esc(x.question)}</textarea></div>
-  <div class="field"><label>关联经文（可多选）</label><select id="qv" multiple size="5">${opts}</select></div>
-  <div class="field"><label>状态</label><select id="qs"><option value="open">待查</option><option value="resolved">已查</option><option value="hold">暂时保留</option></select></div>
-  <div class="field"><label>后来查到的答案 / 我的理解</label><textarea id="qa">${esc(x.answer||'')}</textarea></div>
-  <button class="primary" onclick="saveQuestion('${x.id}')">保存</button>`);
-  document.getElementById('qs').value=x.status
-}
-function saveQuestion(id){
-  let old=db.questions.find(q=>q.id===id),x={id,date:val('qd')||today(),question:val('qt').trim(),verseIds:[...document.getElementById('qv').selectedOptions].map(o=>o.value),status:val('qs'),answer:val('qa').trim(),createdAt:old?.createdAt||new Date().toISOString()},i=db.questions.findIndex(q=>q.id===id);
-  i>=0?db.questions[i]=x:db.questions.push(x);save();closeModal()
-}
-
-function openPrayer(id){
-  let x=id?db.prayers.find(p=>p.id===id):{id:uid(),title:'',category:'自己',status:'ongoing',details:'',progress:''};
-  modal(`<div class="sheethead"><h2>${id?'编辑祷告事项':'新增长期祷告事项'}</h2><button class="iconbtn" onclick="closeModal()">✕</button></div>
-  <div class="field"><label>事项</label><input id="pt" value="${esc(x.title)}"></div>
-  <div class="field"><label>分类</label><select id="pcat"><option>自己</option><option>家人</option><option>孩子</option><option>婚姻</option><option>工作</option><option>属灵成长</option><option>教会</option><option>朋友</option><option>健康</option><option>其他</option></select></div>
-  <div class="field"><label>状态</label><select id="ps"><option value="ongoing">持续祷告</option><option value="waiting">等候中</option><option value="answered">已蒙应允</option><option value="closed">已结束</option></select></div>
-  <div class="field"><label>具体内容</label><textarea id="pd">${esc(x.details||'')}</textarea></div>
-  <div class="field"><label>进展 / 蒙应允记录</label><textarea id="pp">${esc(x.progress||'')}</textarea></div>
-  <button class="primary" onclick="savePrayer('${x.id}')">保存</button>`);
-  document.getElementById('pcat').value=x.category;document.getElementById('ps').value=x.status
-}
-function savePrayer(id){
-  let old=db.prayers.find(p=>p.id===id),x={id,title:val('pt').trim(),category:val('pcat'),status:val('ps'),details:val('pd').trim(),progress:val('pp').trim(),createdAt:old?.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()},i=db.prayers.findIndex(p=>p.id===id);
-  i>=0?db.prayers[i]=x:db.prayers.push(x);save();closeModal()
-}
-
-function openPrayerToday(){
-  let active=db.prayers.filter(p=>!['answered','closed'].includes(p.status)),old=db.prayerLogs.filter(l=>l.date===today()&&l.prayerId);
-  let rows=active.map(p=>`<label class="check"><input class="pcheck" type="checkbox" value="${p.id}" ${old.some(l=>l.prayerId===p.id)?'checked':''}><span><strong>${esc(p.title)}</strong><div class="meta">${esc(p.category)}</div></span></label>`).join('');
-  let temp=db.prayerLogs.filter(l=>l.date===today()&&!l.prayerId).map(l=>l.text).join('\n');
-  modal(`<div class="sheethead"><h2>今日祷告</h2><button class="iconbtn" onclick="closeModal()">✕</button></div><div class="note">长期事项只勾选今天是否祷告过，不需要每天重写。</div>${rows||'<div class="empty">还没有长期祷告事项。</div>'}<div class="field"><label>今天临时想祷告的内容</label><textarea id="temp">${esc(temp)}</textarea></div><button class="primary" onclick="savePrayerToday()">保存</button>`)
-}
-function savePrayerToday(){
-  db.prayerLogs=db.prayerLogs.filter(l=>l.date!==today());
-  document.querySelectorAll('.pcheck:checked').forEach(x=>db.prayerLogs.push({id:uid(),date:today(),prayerId:x.value,text:''}));
-  let t=val('temp').trim();if(t)db.prayerLogs.push({id:uid(),date:today(),prayerId:null,text:t});
-  save();closeModal()
-}
-
-function openGratitude(){
-  let x=db.gratitudes.find(g=>g.date===today())||{id:uid(),text:''};
-  modal(`<div class="sheethead"><h2>今日感恩</h2><button class="iconbtn" onclick="closeModal()">✕</button></div><textarea id="gt">${esc(x.text)}</textarea><div class="actions"><button class="primary" onclick="saveGratitude('${x.id}')">保存</button></div>`)
-}
-function saveGratitude(id){let x={id,date:today(),text:val('gt').trim()},i=db.gratitudes.findIndex(g=>g.date===today());i>=0?db.gratitudes[i]=x:db.gratitudes.push(x);save();closeModal()}
-
-function openSummary(){
-  let x=db.dailySummaries.find(s=>s.date===today())||{id:uid(),reflection:'',oneLine:''};
-  modal(`<div class="sheethead"><h2>日终汇总</h2><button class="iconbtn" onclick="closeModal()">✕</button></div><div class="card">${snapshot(today())}</div><div class="field"><label>今天读完以后，我最想留下什么？</label><textarea id="sr">${esc(x.reflection||'')}</textarea></div><div class="field"><label>今日一句总结</label><input id="so" value="${esc(x.oneLine||'')}"></div><button class="primary" onclick="saveSummary('${x.id}')">保存今天</button>`)
-}
-function saveSummary(id){let x={id,date:today(),reflection:val('sr').trim(),oneLine:val('so').trim()},i=db.dailySummaries.findIndex(s=>s.date===today());i>=0?db.dailySummaries[i]=x:db.dailySummaries.push(x);save();closeModal()}
-function snapshot(d){return `<div class="body">${db.verses.filter(v=>v.date===d).length} 条经文 · ${db.questions.filter(q=>q.date===d).length} 个问题 · ${db.prayerLogs.filter(p=>p.date===d).length} 条祷告</div>`}
-
-function renderToday(){
-  let d=today(),vs=db.verses.filter(v=>v.date===d),qs=db.questions.filter(q=>q.date===d),ps=db.prayerLogs.filter(p=>p.date===d);
-  document.getElementById('todayDate').textContent=fmt(d);document.getElementById('vc').textContent=vs.length;document.getElementById('qc').textContent=qs.length;document.getElementById('pc').textContent=ps.length;
-  let a=[];
-  vs.forEach(v=>a.push(`<div class="card"><div class="quote">${lines(v.text)}</div><div class="meta">${esc(v.reference)}</div>${v.note?`<div class="body">${lines(v.note)}</div>`:''}<div class="actions"><button class="secondary" onclick="openQuestion(null,'${v.id}')">＋ 针对这段提问</button></div></div>`));
-  qs.forEach(q=>a.push(`<div class="card"><div class="title">？ ${esc(q.question)}</div>${linked(q.verseIds)}</div>`));
-  document.getElementById('todayStudy').innerHTML=a.length?a.join(''):'<div class="empty">今天还没有研经记录。</div>';
-  document.getElementById('todayPrayers').innerHTML=ps.length?ps.map(l=>{let p=db.prayers.find(x=>x.id===l.prayerId);return `<div class="card"><div class="title">🙏 ${p?esc(p.title):'临时祷告'}</div>${!p?`<div class="body">${lines(l.text)}</div>`:''}</div>`}).join(''):'<div class="empty">今天还没有记录祷告。</div>';
-  let s=db.dailySummaries.find(x=>x.date===d),g=db.gratitudes.find(x=>x.date===d);
-  document.getElementById('summaryCard').innerHTML=(g?.text||s?.reflection||s?.oneLine)?`${g?.text?`<div class="body">🌿 ${lines(g.text)}</div>`:''}${s?.reflection?`<div class="body">${lines(s.reflection)}</div>`:''}${s?.oneLine?`<div class="meta">一句话：${esc(s.oneLine)}</div>`:''}`:'<div class="note">白天只管记录，晚上再汇总，不需要重复抄经文或祷告。</div>'
-}
-function linked(ids=[]){return ids.map(id=>db.verses.find(v=>v.id===id)).filter(Boolean).map(v=>`<div class="meta">📖 ${esc(v.reference||v.text.slice(0,30))}</div>`).join('')}
-function cn(s){if(/^\d+$/.test(s))return +s;let d={'一':1,'二':2,'三':3,'四':4,'五':5,'六':6,'七':7,'八':8,'九':9,'十':10};return d[s]||999}
-function ref(r){let b=BOOKS.find(x=>String(r).includes(x));if(!b)return null;let m=String(r).match(/([一二三四五六七八九十\d]+)\s*(?:章|[:：])\s*([一二三四五六七八九十\d]+)/);return{b:BOOKS.indexOf(b),c:m?cn(m[1]):999,v:m?cn(m[2]):999}}
-function compare(a,b){let x=ref(a),y=ref(b);if(x&&!y)return-1;if(!x&&y)return 1;if(!x&&!y)return 0;return x.b-y.b||x.c-y.c||x.v-y.v}
-
-function renderBible(){
-  let q=(document.getElementById('verseSearch').value||'').toLowerCase(),f=document.getElementById('verseQFilter').value||'all';
-  let xs=db.verses.filter(v=>[v.text,v.reference,v.tags,v.note].join(' ').toLowerCase().includes(q)).filter(v=>{let h=db.questions.some(x=>(x.verseIds||[]).includes(v.id));return f==='all'||(f==='with'&&h)||(f==='without'&&!h)});
-  xs.sort(db.settings.verseSort==='reference'?(a,b)=>compare(a.reference,b.reference):db.settings.verseSort==='oldest'?(a,b)=>(a.createdAt||'').localeCompare(b.createdAt||''):(a,b)=>(b.createdAt||'').localeCompare(a.createdAt||''));
-  document.getElementById('verseSort').value=db.settings.verseSort;
-  document.getElementById('verseList').innerHTML=xs.length?xs.map(v=>`<div class="card" onclick="openVerse('${v.id}')"><div class="quote">${lines(v.text)}</div><div class="meta">${esc(v.reference)} · ${v.date}</div>${v.note?`<div class="body">${lines(v.note)}</div>`:''}</div>`).join(''):'<div class="empty">还没有经文记录。</div>'
-}
-function renderQuestions(){
-  let f=document.getElementById('qFilter').value||'all',xs=db.questions.filter(q=>f==='all'||q.status===f);
-  document.getElementById('questionList').innerHTML=xs.length?xs.map(q=>`<div class="card" onclick="openQuestion('${q.id}')"><div class="row"><div class="title">${esc(q.question)}</div><span class="tag">${q.status==='resolved'?'已查':q.status==='hold'?'暂时保留':'待查'}</span></div>${linked(q.verseIds)}${q.answer?`<div class="body">${lines(q.answer)}</div>`:''}</div>`).join(''):'<div class="empty">还没有问题。</div>'
-}
-function renderPrayers(){
-  let f=document.getElementById('pFilter').value||'all',xs=db.prayers.filter(p=>f==='all'||p.status===f);
-  document.getElementById('prayerList').innerHTML=xs.length?xs.map(p=>`<div class="card" onclick="openPrayer('${p.id}')"><div class="row"><div class="title">${esc(p.title)}</div><span class="tag">${{ongoing:'持续祷告',waiting:'等候中',answered:'已蒙应允',closed:'已结束'}[p.status]}</span></div><div class="meta">${esc(p.category)} · 已祷告 ${db.prayerLogs.filter(l=>l.prayerId===p.id).length} 次</div>${p.details?`<div class="body">${lines(p.details)}</div>`:''}</div>`).join(''):'<div class="empty">还没有长期祷告事项。</div>'
-}
-
-function openReview(){
-  let ds=[...new Set([...db.verses.map(x=>x.date),...db.questions.map(x=>x.date),...db.prayerLogs.map(x=>x.date),...db.dailySummaries.map(x=>x.date)].filter(Boolean))].sort().reverse();
-  modal(`<div class="sheethead"><h2>历史回顾</h2><button class="iconbtn" onclick="closeModal()">✕</button></div><div class="list">${ds.map(d=>`<div class="card"><div class="title">${fmt(d)}</div>${snapshot(d)}${db.dailySummaries.find(x=>x.date===d)?.oneLine?`<div class="meta">一句话：${esc(db.dailySummaries.find(x=>x.date===d).oneLine)}</div>`:''}</div>`).join('')}</div>`)
-}
-function openSettings(){modal(`<div class="sheethead"><h2>设置</h2><button class="iconbtn" onclick="closeModal()">✕</button></div><div class="note">v0.6 重点先重构使用逻辑，外观设置后续继续完善。</div>`)}
-
-let scanFile=null;
-function openScan(){modal(`<div class="sheethead"><h2>拍照摘录经文</h2><button class="iconbtn" onclick="closeModal()">✕</button></div><input type="file" accept="image/*" capture="environment" onchange="scanFile=this.files[0]"><div class="actions"><button class="primary" onclick="runScan()">开始识别</button></div><div id="scanStatus" class="note"></div><div id="scanOut" style="display:none"><textarea id="scanText"></textarea><input id="scanRef" placeholder="出处"><div class="actions"><button class="primary" onclick="saveScan()">保存为今天的经文</button></div></div>`)}
-async function runScan(){
-  if(!scanFile)return alert('请先选择照片');
-  document.getElementById('scanStatus').textContent='正在识别…';
-  try{
-    let text='',reference='',url=db.settings.ocrBackendUrl;
-    if(url){try{let fd=new FormData();fd.append('image',scanFile);let r=await fetch(url,{method:'POST',body:fd});let d=await r.json();text=d.text||d.ocrText||'';reference=d.reference||''}catch(e){}}
-    if(!text){let w=await Tesseract.createWorker(['chi_sim','eng']);let r=await w.recognize(scanFile);text=r.data.text||'';await w.terminate()}
-    document.getElementById('scanText').value=text.trim();document.getElementById('scanRef').value=reference;document.getElementById('scanOut').style.display='block';document.getElementById('scanStatus').textContent='识别完成，请核对后再保存。'
-  }catch(e){document.getElementById('scanStatus').textContent='识别失败。'}
-}
-function saveScan(){db.verses.push({id:uid(),date:today(),text:val('scanText'),reference:val('scanRef'),tags:'',note:'',source:'ocr',createdAt:new Date().toISOString()});save();closeModal()}
-
-function exportData(){let a=document.createElement('a'),b=new Blob([JSON.stringify(db,null,2)],{type:'application/json'});a.href=URL.createObjectURL(b);a.download='spiritual-journal-backup-'+today()+'.json';a.click()}
-function importData(e){let r=new FileReader();r.onload=()=>{try{db=migrate(JSON.parse(r.result));save();alert('导入完成')}catch(_){alert('文件格式不正确')}};r.readAsText(e.target.files[0])}
-function renderAll(){renderToday();renderBible();renderQuestions();renderPrayers();if(document.getElementById('backend'))document.getElementById('backend').value=db.settings.ocrBackendUrl||''}
-if('serviceWorker'in navigator)navigator.serviceWorker.register('./service-worker.js').catch(()=>{});
-renderAll();
-</script>
 </body>
 </html>

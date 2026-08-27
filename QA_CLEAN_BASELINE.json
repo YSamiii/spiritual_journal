@@ -1,0 +1,84 @@
+{
+  "checks": {
+    "all_js_syntax_ok": true,
+    "index_has_no_style_block": true,
+    "index_has_no_inline_business_script": true,
+    "external_css": true,
+    "database_key_preserved": true,
+    "bible_sort_single_file": true,
+    "ocr_single_file": true,
+    "backup_single_file": true,
+    "separate_models": true,
+    "separate_screens": true
+  },
+  "syntax": {
+    "service-worker.js": {
+      "ok": true,
+      "message": ""
+    },
+    "src/core.js": {
+      "ok": true,
+      "message": ""
+    },
+    "src/app.js": {
+      "ok": true,
+      "message": ""
+    },
+    "src/screens/prayers.js": {
+      "ok": true,
+      "message": ""
+    },
+    "src/screens/review.js": {
+      "ok": true,
+      "message": ""
+    },
+    "src/screens/today.js": {
+      "ok": true,
+      "message": ""
+    },
+    "src/screens/questions.js": {
+      "ok": true,
+      "message": ""
+    },
+    "src/screens/bible.js": {
+      "ok": true,
+      "message": ""
+    },
+    "src/models/verse.js": {
+      "ok": true,
+      "message": ""
+    },
+    "src/models/prayer.js": {
+      "ok": true,
+      "message": ""
+    },
+    "src/models/gratitude.js": {
+      "ok": true,
+      "message": ""
+    },
+    "src/models/question.js": {
+      "ok": true,
+      "message": ""
+    },
+    "src/models/daily-summary.js": {
+      "ok": true,
+      "message": ""
+    },
+    "src/services/bible-reference.js": {
+      "ok": true,
+      "message": ""
+    },
+    "src/services/settings.js": {
+      "ok": true,
+      "message": ""
+    },
+    "src/services/ocr.js": {
+      "ok": true,
+      "message": ""
+    },
+    "src/services/backup.js": {
+      "ok": true,
+      "message": ""
+    }
+  }
+}
