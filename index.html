@@ -1,506 +1,245 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
-  <meta name="theme-color" content="#f5f1e7" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-title" content="属灵日记" />
-  <title>属灵日记</title>
-  <link rel="manifest" href="manifest.json" />
-  <link rel="apple-touch-icon" href="icons/icon-192.png" />
-  <style>
-    :root{
-      --bg:#f5f1e7; --card:#fffdf7; --card2:#eee9dd; --text:#3f453c; --muted:#7b8177;
-      --accent:#7e9279; --accent2:#657861; --border:#d8d3c7; --danger:#a85f5f; --shadow:0 8px 30px rgba(60,65,55,.08);
-      --nav:rgba(245,241,231,.94);
-    }
-    @media (prefers-color-scheme: dark){
-      :root[data-theme="system"]{
-        --bg:#1f241f; --card:#272d27; --card2:#303730; --text:#eef2e9; --muted:#aeb7aa;
-        --accent:#9db297; --accent2:#b7c8b1; --border:#414a40; --danger:#dd8e8e; --shadow:none; --nav:rgba(31,36,31,.94);
-      }
-    }
-    :root[data-theme="dark"]{
-      --bg:#1f241f; --card:#272d27; --card2:#303730; --text:#eef2e9; --muted:#aeb7aa;
-      --accent:#9db297; --accent2:#b7c8b1; --border:#414a40; --danger:#dd8e8e; --shadow:none; --nav:rgba(31,36,31,.94);
-    }
-    *{box-sizing:border-box}
-    html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
-    body{min-height:100vh;padding-bottom:88px;overscroll-behavior:none}
-    button,input,textarea,select{font:inherit}
-    button{cursor:pointer}
-    .app{max-width:760px;margin:0 auto;padding:18px 16px 26px}
-    .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:4px 0 18px}
-    .brand{display:flex;align-items:center;gap:12px}
-    .mark{width:46px;height:46px;border-radius:16px;background:var(--card);display:grid;place-items:center;box-shadow:var(--shadow);font-size:24px}
-    h1{font-size:24px;margin:0;line-height:1.15}
-    .subtitle{font-size:13px;color:var(--muted);margin-top:3px}
-    .iconbtn{border:1px solid var(--border);background:var(--card);color:var(--text);border-radius:12px;padding:9px 11px}
-    .hero{background:linear-gradient(145deg,var(--card),var(--card2));border:1px solid var(--border);border-radius:24px;padding:22px;box-shadow:var(--shadow);margin-bottom:16px}
-    .date{font-size:13px;color:var(--muted);margin-bottom:8px}
-    .hero h2{font-size:24px;margin:0 0 8px}
-    .hero p{margin:0;color:var(--muted);line-height:1.5}
-    .primary{border:0;background:var(--accent);color:#fff;border-radius:14px;padding:13px 16px;font-weight:650}
-    .secondary{border:1px solid var(--border);background:var(--card);color:var(--text);border-radius:14px;padding:12px 15px}
-    .danger{border:1px solid color-mix(in srgb, var(--danger) 45%, var(--border));background:transparent;color:var(--danger);border-radius:12px;padding:10px 12px}
-    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
-    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-    .tile{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:16px;box-shadow:var(--shadow);min-height:112px}
-    .tile .emoji{font-size:24px}
-    .tile h3{font-size:16px;margin:8px 0 3px}
-    .tile p{font-size:12px;color:var(--muted);margin:0}
-    .section{margin-top:18px}
-    .section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
-    .section h2{font-size:18px;margin:0}
-    .list{display:flex;flex-direction:column;gap:10px}
-    .card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:15px;box-shadow:var(--shadow)}
-    .card-title{font-weight:700;margin-bottom:5px}
-    .meta{font-size:12px;color:var(--muted)}
-    .tag{display:inline-flex;align-items:center;padding:5px 8px;border-radius:999px;background:var(--card2);font-size:11px;margin:4px 4px 0 0}
-    .status{font-size:11px;border-radius:999px;padding:5px 8px;background:var(--card2)}
-    .row{display:flex;align-items:center;justify-content:space-between;gap:10px}
-    .empty{padding:28px 16px;text-align:center;color:var(--muted);border:1px dashed var(--border);border-radius:18px}
-    .nav{position:fixed;left:0;right:0;bottom:0;background:var(--nav);backdrop-filter:blur(18px);border-top:1px solid var(--border);padding:8px max(10px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));z-index:30}
-    .nav-inner{max-width:760px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr)}
-    .nav button{border:0;background:transparent;color:var(--muted);padding:7px 3px;font-size:10px}
-    .nav button .nicon{display:block;font-size:20px;margin-bottom:3px}
-    .nav button.active{color:var(--accent2);font-weight:700}
-    .screen{display:none}.screen.active{display:block}
-    .fab{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:92px;width:54px;height:54px;border-radius:18px;border:0;background:var(--accent);color:white;font-size:26px;box-shadow:0 10px 30px rgba(50,70,50,.22)}
-    .modal{position:fixed;inset:0;background:rgba(15,18,15,.42);z-index:100;display:none;align-items:flex-end;justify-content:center}
-    .modal.open{display:flex}
-    .sheet{width:100%;max-width:760px;max-height:92vh;overflow:auto;background:var(--bg);border-radius:24px 24px 0 0;padding:18px 16px calc(24px + env(safe-area-inset-bottom));border:1px solid var(--border)}
-    .sheet-head{display:flex;align-items:center;justify-content:space-between;position:sticky;top:-18px;background:var(--bg);padding:18px 0 12px;z-index:2}
-    .sheet h2{margin:0;font-size:20px}
-    .field{margin:13px 0}
-    label{display:block;font-size:13px;font-weight:650;margin-bottom:6px}
-    input,textarea,select{width:100%;border:1px solid var(--border);background:var(--card);color:var(--text);border-radius:12px;padding:12px;outline:none}
-    textarea{min-height:92px;resize:vertical}
-    .formgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .search{display:flex;gap:8px;margin-bottom:12px}
-    .search input{flex:1}
-    .settings-group{margin:16px 0}
-    .settings-group h3{font-size:14px;margin-bottom:8px}
-    .seg{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
-    .seg button{border:1px solid var(--border);background:var(--card);color:var(--text);border-radius:11px;padding:10px 6px}
-    .seg button.selected{background:var(--accent);color:white;border-color:var(--accent)}
-    .note{font-size:12px;color:var(--muted);line-height:1.5}
-    .quote{border-left:3px solid var(--accent);padding-left:12px;font-size:15px;line-height:1.65}
-    .ocr-preview{width:100%;max-height:320px;object-fit:contain;border-radius:14px;border:1px solid var(--border);background:var(--card2)}
-    .progress{height:9px;background:var(--card2);border-radius:999px;overflow:hidden;border:1px solid var(--border)}
-    .progress > div{height:100%;width:0;background:var(--accent);transition:width .2s}
-    .ocr-status{font-size:12px;color:var(--muted);margin-top:7px}
-    .crop-stage{position:relative;width:100%;background:#111;border-radius:14px;overflow:hidden;border:1px solid var(--border);touch-action:none}
-    .crop-stage img{display:block;width:100%;height:auto;max-height:420px;object-fit:contain;margin:auto}
-    .crop-box{position:absolute;border:2px solid #fff;box-shadow:0 0 0 9999px rgba(0,0,0,.46);display:none;touch-action:none}
-    .crop-hint{font-size:12px;color:var(--muted);margin-top:7px}
-    .filterbar{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 12px}
-    .filterbar select{width:auto;min-width:132px}
-    .toolbar{display:flex;gap:8px;flex-wrap:wrap}
-    .toolbar select{width:auto;min-width:130px}
-    .calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-    .cal-head{text-align:center;font-size:11px;color:var(--muted);padding:4px}
-    .day{aspect-ratio:1;border:1px solid var(--border);background:var(--card);border-radius:12px;padding:6px;font-size:11px;position:relative}
-    .day.has:after{content:"";position:absolute;width:6px;height:6px;border-radius:50%;background:var(--accent);bottom:6px;left:50%;transform:translateX(-50%)}
-    .day.today{outline:2px solid var(--accent)}
-    @media(min-width:680px){.grid{grid-template-columns:repeat(4,1fr)}}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#f5f1e7">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>属灵日记</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<style>
+:root{--bg:#f5f1e7;--card:#fffdf7;--text:#394139;--muted:#7c837a;--accent:#839a80;--border:#d8d2c6;--soft:#eee9dd}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif}
+body{padding-bottom:92px}.app{max-width:760px;margin:auto;padding:18px 16px}.top,.row,.head{display:flex;align-items:center;justify-content:space-between;gap:10px}.top{margin-bottom:18px}.brand{display:flex;gap:12px;align-items:center}.mark{width:46px;height:46px;border-radius:15px;background:var(--card);display:grid;place-items:center;font-size:23px}h1{font-size:24px;margin:0}.sub,.meta,.note{color:var(--muted);font-size:12px}.hero,.card{background:var(--card);border:1px solid var(--border);border-radius:20px}.hero{padding:18px;background:linear-gradient(145deg,var(--card),var(--soft));margin-bottom:12px}.hero h2{font-size:21px;margin:6px 0}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.quick{padding:15px;min-height:105px}.quick h3{margin:7px 0 4px;font-size:15px}.section{margin-top:18px}.head{margin-bottom:9px}.head h2{font-size:18px;margin:0}.list{display:flex;flex-direction:column;gap:9px}.card{padding:14px}.title{font-weight:700}.body{line-height:1.6;margin-top:7px}.quote{border-left:3px solid var(--accent);padding-left:11px;line-height:1.65}.tag{display:inline-block;background:var(--soft);border-radius:999px;font-size:11px;padding:5px 8px;margin:4px 4px 0 0}.empty{text-align:center;color:var(--muted);border:1px dashed var(--border);border-radius:17px;padding:22px}.primary,.secondary,.iconbtn{border-radius:12px;padding:10px 12px;font:inherit}.primary{border:0;background:var(--accent);color:#fff;font-weight:700}.secondary,.iconbtn{border:1px solid var(--border);background:var(--card);color:var(--text)}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.screen{display:none}.screen.active{display:block}.nav{position:fixed;left:0;right:0;bottom:0;background:rgba(245,241,231,.95);border-top:1px solid var(--border);padding:7px 8px calc(7px + env(safe-area-inset-bottom));backdrop-filter:blur(16px)}.navin{max-width:760px;margin:auto;display:grid;grid-template-columns:repeat(5,1fr)}.nav button{border:0;background:transparent;color:var(--muted);font-size:10px;padding:5px}.nav button.active{color:#60765e;font-weight:700}.ni{display:block;font-size:20px}.fab{position:fixed;right:18px;bottom:94px;width:54px;height:54px;border:0;border-radius:17px;background:var(--accent);color:#fff;font-size:28px}.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.42);align-items:flex-end;justify-content:center;z-index:20}.modal.open{display:flex}.sheet{background:var(--bg);width:100%;max-width:760px;max-height:92vh;overflow:auto;border-radius:24px 24px 0 0;padding:18px 16px calc(24px + env(safe-area-inset-bottom))}.sheethead{display:flex;justify-content:space-between;align-items:center;position:sticky;top:-18px;background:var(--bg);padding:18px 0 10px}.field{margin:12px 0}label{display:block;font-size:13px;font-weight:700;margin-bottom:6px}input,textarea,select{width:100%;padding:12px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--text);font:inherit}textarea{min-height:90px}.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.toolbar select{width:auto}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stat{text-align:center}.stat strong{display:block;font-size:22px}.check{display:flex;align-items:flex-start;gap:9px;padding:9px 0}.check input{width:auto;margin-top:4px}@media(min-width:680px){.grid{grid-template-columns:repeat(4,1fr)}}
+</style>
 </head>
 <body>
 <div class="app">
-  <div class="topbar">
-    <div class="brand"><div class="mark">🕯️</div><div><h1 data-i18n="appName">属灵日记</h1><div class="subtitle" data-i18n="tagline">安静记录，持续回望</div></div></div>
+  <div class="top">
+    <div class="brand"><div class="mark">🕯️</div><div><h1>属灵日记</h1><div class="sub">今天记录，长期回望</div></div></div>
     <button class="iconbtn" onclick="openSettings()">⚙︎</button>
   </div>
 
-  <section id="home" class="screen active">
-    <div class="hero">
-      <div class="date" id="todayText"></div>
-      <h2 data-i18n="todayTitle">今天，我想记下什么？</h2>
-      <p data-i18n="todayDesc">经文、感恩、祷告，以及今天值得留下的片段。</p>
-      <div class="actions"><button class="primary" onclick="openJournal()" data-i18n="startJournal">开始今天的属灵日记</button></div>
-    </div>
+  <section id="today" class="screen active">
+    <div class="hero"><div class="meta" id="todayDate"></div><h2>今天，不需要一次写完</h2><div class="note">读到一句就摘一句，有疑问就记下来，想到祷告就追加。晚上再做日终汇总。</div></div>
     <div class="grid">
-      <div class="tile" onclick="go('prayers')"><div class="emoji">🙏</div><h3 data-i18n="prayers">祷告事项</h3><p id="prayerCount"></p></div>
-      <div class="tile" onclick="openQuick('gratitude')"><div class="emoji">🌿</div><h3 data-i18n="gratitude">感恩记录</h3><p data-i18n="gratitudeHint">记下今天值得感谢的事</p></div>
-      <div class="tile" onclick="go('verses')"><div class="emoji">📖</div><h3 data-i18n="verses">经文收藏</h3><p id="verseCount"></p></div>
-      <div class="tile" onclick="go('review')"><div class="emoji">🕊️</div><h3 data-i18n="review">回顾</h3><p data-i18n="reviewHint">从时间线重新看见过程</p></div>
+      <div class="card quick" onclick="openVerse()">📖<h3>摘录经文</h3><div class="note">一天可加很多条</div></div>
+      <div class="card quick" onclick="openQuestion()">？<h3>记一个问题</h3><div class="note">关联经文，留待查考</div></div>
+      <div class="card quick" onclick="openPrayerToday()">🙏<h3>今日祷告</h3><div class="note">勾选长期事项或临时追加</div></div>
+      <div class="card quick" onclick="openGratitude()">🌿<h3>感恩</h3><div class="note">随时记一条</div></div>
     </div>
     <div class="section">
-      <div class="section-head"><h2 data-i18n="recent">最近记录</h2><button class="secondary" onclick="go('review')" data-i18n="seeAll">查看全部</button></div>
-      <div class="list" id="recentList"></div>
+      <div class="head"><h2>今日研经</h2><button class="secondary" onclick="openScan()">📷 拍照摘录</button></div>
+      <div class="stats"><div class="card stat"><strong id="vc">0</strong><span class="note">经文</span></div><div class="card stat"><strong id="qc">0</strong><span class="note">问题</span></div><div class="card stat"><strong id="pc">0</strong><span class="note">祷告</span></div></div>
+      <div class="list" id="todayStudy" style="margin-top:10px"></div>
     </div>
+    <div class="section"><div class="head"><h2>今日祷告</h2><button class="secondary" onclick="openPrayerToday()">记录</button></div><div class="list" id="todayPrayers"></div></div>
+    <div class="section"><div class="head"><h2>日终汇总</h2><button class="primary" onclick="openSummary()">整理今天</button></div><div class="card" id="summaryCard"></div></div>
   </section>
 
-  <section id="prayers" class="screen">
-    <div class="section-head"><h2 data-i18n="prayers">祷告事项</h2><button class="primary" onclick="openPrayer()" data-i18n="add">新增</button></div>
-    <div class="toolbar"><select id="prayerFilter" onchange="renderPrayers()"><option value="all" data-i18n-opt="all">全部状态</option><option value="ongoing">持续祷告</option><option value="waiting">等候中</option><option value="answered">已蒙应允</option><option value="closed">已结束</option></select></div>
-    <div class="section"><div class="list" id="prayerList"></div></div>
-  </section>
-
-  <section id="verses" class="screen">
-    <div class="section-head"><h2 data-i18n="verses">经文收藏</h2><div class="actions" style="margin-top:0"><button class="secondary" onclick="openScriptureScan()" data-i18n="scanScripture">📷 拍照识别</button><button class="primary" onclick="openVerse()" data-i18n="add">新增</button></div></div>
-    <div class="search"><input id="verseSearch" data-i18n-ph="searchVerses" placeholder="搜索经文、主题或笔记" oninput="renderVerses()"></div>
-    <div class="filterbar">
-      <select id="verseSourceFilter" onchange="renderVerses()"><option value="all">全部来源</option><option value="ocr">拍照识别</option><option value="manual">手动添加</option></select>
-      <select id="verseNoteFilter" onchange="renderVerses()"><option value="all">全部笔记</option><option value="with">有笔记</option><option value="without">无笔记</option></select>
-      <select id="verseSort" onchange="renderVerses()"><option value="newest">最近添加</option><option value="oldest">最早添加</option><option value="updated">最近修改</option><option value="reference">按圣经顺序</option></select>
-    </div>
+  <section id="bible" class="screen">
+    <div class="head"><h2>经文库</h2><button class="primary" onclick="openVerse()">新增</button></div>
+    <input id="verseSearch" placeholder="搜索经文、出处、标签或笔记" oninput="renderBible()">
+    <div class="toolbar"><select id="verseSort" onchange="db.settings.verseSort=this.value;save()"><option value="reference">按圣经顺序</option><option value="newest">最近添加</option><option value="oldest">最早添加</option></select><select id="verseQFilter" onchange="renderBible()"><option value="all">全部</option><option value="with">有关联问题</option><option value="without">无关联问题</option></select></div>
     <div class="list" id="verseList"></div>
   </section>
 
-  <section id="review" class="screen">
-    <div class="section-head"><h2 data-i18n="review">回顾</h2><button class="secondary" onclick="toggleReviewMode()" id="reviewModeBtn" data-i18n="calendarView">日历视图</button></div>
-    <div class="search"><input id="reviewSearch" data-i18n-ph="searchJournal" placeholder="搜索日记、感恩、祷告、经文" oninput="renderReview()"></div>
-    <div id="timelineWrap"><div class="list" id="timeline"></div></div>
-    <div id="calendarWrap" style="display:none"><div class="row" style="margin-bottom:10px"><button class="secondary" onclick="changeMonth(-1)">‹</button><strong id="monthLabel"></strong><button class="secondary" onclick="changeMonth(1)">›</button></div><div class="calendar" id="calendar"></div></div>
+  <section id="questions" class="screen">
+    <div class="head"><h2>问题本</h2><button class="primary" onclick="openQuestion()">新增</button></div>
+    <div class="toolbar"><select id="qFilter" onchange="renderQuestions()"><option value="all">全部</option><option value="open">待查</option><option value="resolved">已查</option><option value="hold">暂时保留</option></select></div>
+    <div class="list" id="questionList"></div>
+  </section>
+
+  <section id="prayer" class="screen">
+    <div class="head"><h2>长期祷告事项</h2><button class="primary" onclick="openPrayer()">新增</button></div>
+    <div class="toolbar"><select id="pFilter" onchange="renderPrayers()"><option value="all">全部</option><option value="ongoing">持续祷告</option><option value="waiting">等候中</option><option value="answered">已蒙应允</option><option value="closed">已结束</option></select></div>
+    <div class="list" id="prayerList"></div>
   </section>
 
   <section id="more" class="screen">
-    <div class="section-head"><h2 data-i18n="more">更多</h2></div>
+    <div class="head"><h2>回顾与设置</h2></div>
     <div class="list">
-      <div class="card"><div class="card-title" data-i18n="backup">备份与恢复</div><p class="note" data-i18n="backupDesc">完整导出日记、祷告事项、感恩记录、经文与设置。图片暂未纳入本版。</p><div class="actions"><button class="secondary" onclick="exportData()" data-i18n="exportJson">导出 JSON</button><button class="secondary" onclick="document.getElementById('importFile').click()" data-i18n="importJson">导入 JSON</button><input id="importFile" type="file" accept="application/json" hidden onchange="importData(event)"></div></div>
-      <div class="card"><div class="card-title">高精度经文识别</div><p class="note">可选配置 OCR 后端。配置后“自动”模式优先使用后端，失败再回退本地 OCR。</p><div class="field"><label>OCR Backend URL</label><input id="ocrBackendUrl" placeholder="https://example.com/api/ocr"></div><div class="actions"><button class="secondary" onclick="saveOcrBackend()">保存识别设置</button></div></div>
-    <div class="card"><div class="card-title" data-i18n="privacy">隐私</div><p class="note">本版记录默认只保存在当前设备。只有使用你配置的高精度 OCR 后端时，所选裁剪区域才会发送给该后端。</p></div>
-      <div class="card"><div class="card-title" data-i18n="principle">记录原则</div><p class="note" data-i18n="principleDesc">App 只帮助保存、整理和回顾你写下的内容，不替你断言某件事一定是神的启示或旨意。</p></div>
+      <div class="card"><div class="title">历史回顾</div><div class="note">按日期查看每天的经文、问题、祷告、感恩和总结。</div><div class="actions"><button class="secondary" onclick="openReview()">打开回顾</button></div></div>
+      <div class="card"><div class="title">高精度 OCR</div><div class="field"><label>OCR Backend URL</label><input id="backend"></div><div class="actions"><button class="secondary" onclick="db.settings.ocrBackendUrl=val('backend').trim();save()">保存</button></div></div>
+      <div class="card"><div class="title">备份与恢复</div><div class="actions"><button class="secondary" onclick="exportData()">导出 JSON</button><button class="secondary" onclick="document.getElementById('importFile').click()">导入 JSON</button><input id="importFile" hidden type="file" accept="application/json" onchange="importData(event)"></div></div>
     </div>
   </section>
 </div>
 
-<button class="fab" id="fab" onclick="contextAdd()">＋</button>
-
-<nav class="nav"><div class="nav-inner">
-  <button class="active" data-screen="home" onclick="go('home')"><span class="nicon">⌂</span><span data-i18n="home">首页</span></button>
-  <button data-screen="prayers" onclick="go('prayers')"><span class="nicon">🙏</span><span data-i18n="prayersShort">祷告</span></button>
-  <button data-screen="verses" onclick="go('verses')"><span class="nicon">📖</span><span data-i18n="versesShort">经文</span></button>
-  <button data-screen="review" onclick="go('review')"><span class="nicon">◷</span><span data-i18n="review">回顾</span></button>
-  <button data-screen="more" onclick="go('more')"><span class="nicon">•••</span><span data-i18n="more">更多</span></button>
+<button class="fab" onclick="contextAdd()">＋</button>
+<nav class="nav"><div class="navin">
+  <button class="active" data-s="today" onclick="go('today')"><span class="ni">⌂</span>今天</button>
+  <button data-s="bible" onclick="go('bible')"><span class="ni">📖</span>经文</button>
+  <button data-s="questions" onclick="go('questions')"><span class="ni">？</span>问题</button>
+  <button data-s="prayer" onclick="go('prayer')"><span class="ni">🙏</span>祷告</button>
+  <button data-s="more" onclick="go('more')"><span class="ni">•••</span>更多</button>
 </div></nav>
 
 <div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
-
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@6/dist/tesseract.min.js"></script>
 <script>
-const DB_KEY='spiritualJournal.v0.1';
-const defaultDB={version:1,journals:[],prayers:[],verses:[],settings:{language:'system',theme:'system',ocrBackendUrl:''}};
-let db=loadDB(); let currentScreen='home'; let reviewMode='timeline'; let calDate=new Date();
+const KEY='spiritualJournal.v0.1';
+const DEF={version:6,verses:[],questions:[],prayers:[],prayerLogs:[],gratitudes:[],dailySummaries:[],journals:[],settings:{verseSort:'reference',ocrBackendUrl:''}};
+let db=migrate(load());
+let screen='today';
+const BOOKS=['创世记','出埃及记','利未记','民数记','申命记','约书亚记','士师记','路得记','撒母耳记上','撒母耳记下','列王纪上','列王纪下','历代志上','历代志下','以斯拉记','尼希米记','以斯帖记','约伯记','诗篇','箴言','传道书','雅歌','以赛亚书','耶利米书','耶利米哀歌','以西结书','但以理书','何西阿书','约珥书','阿摩司书','俄巴底亚书','约拿书','弥迦书','那鸿书','哈巴谷书','西番雅书','哈该书','撒迦利亚书','玛拉基书','马太福音','马可福音','路加福音','约翰福音','使徒行传','罗马书','哥林多前书','哥林多后书','加拉太书','以弗所书','腓立比书','歌罗西书','帖撒罗尼迦前书','帖撒罗尼迦后书','提摩太前书','提摩太后书','提多书','腓利门书','希伯来书','雅各书','彼得前书','彼得后书','约翰一书','约翰二书','约翰三书','犹大书','启示录'];
 
-const T={
-zh:{
-appName:'属灵日记',tagline:'安静记录，持续回望',todayTitle:'今天，我想记下什么？',todayDesc:'经文、感恩、祷告，以及今天值得留下的片段。',
-startJournal:'开始今天的属灵日记',prayers:'祷告事项',gratitude:'感恩记录',gratitudeHint:'记下今天值得感谢的事',verses:'经文收藏',review:'回顾',reviewHint:'从时间线重新看见过程',
-recent:'最近记录',seeAll:'查看全部',add:'新增',searchVerses:'搜索经文、主题或笔记',searchJournal:'搜索日记、感恩、祷告、经文',calendarView:'日历视图',timelineView:'时间线',
-more:'更多',backup:'备份与恢复',backupDesc:'完整导出日记、祷告事项、感恩记录、经文与设置。图片暂未纳入本版。',exportJson:'导出 JSON',importJson:'导入 JSON',
-privacy:'隐私',privacyDesc:'本版数据仅保存在当前浏览器/设备的本地存储中，不会自动上传。',principle:'记录原则',principleDesc:'App 只帮助保存、整理和回顾你写下的内容，不替你断言某件事一定是神的启示或旨意。',
-home:'首页',prayersShort:'祷告',versesShort:'经文',settings:'设置',language:'语言',theme:'外观',system:'跟随系统',chinese:'中文',english:'English',light:'浅色',dark:'深色',close:'关闭',
-save:'保存',delete:'删除',edit:'编辑',title:'标题',category:'分类',status:'状态',notes:'备注',progress:'进展记录',ongoing:'持续祷告',waiting:'等候中',answered:'已蒙应允',closed:'已结束',
-journal:'属灵日记',scripture:'今日经文',scriptureRef:'经文出处',scriptureReminder:'经文给我的提醒',todayGratitude:'今日感恩',todayPrayer:'今日祷告',todayEvents:'今天经历了什么',
-guidance:'我察觉到的带领 / 提醒',surrender:'需要交托的事',oneLine:'今日一句总结',favorite:'重要记录',verseText:'经文内容',reference:'出处',tags:'主题标签',reflection:'我的理解 / 当时的处境',
-newPrayer:'新增祷告事项',editPrayer:'编辑祷告事项',newVerse:'新增经文',editVerse:'编辑经文',quickGratitude:'快速记录感恩',prayerCount:'个进行中',verseCount:'条经文',noRecent:'还没有日记记录。',
-noPrayers:'还没有祷告事项。',noVerses:'还没有收藏经文。',noJournal:'没有找到相关记录。',confirmDelete:'确定删除这条记录吗？',importOk:'备份已导入。',importFail:'无法导入：文件格式不正确。',all:'全部状态',
-scanScripture:'📷 拍照识别',scanTitle:'拍照识别经文',takePhoto:'拍照 / 从相册选择',recognize:'开始识别',recognizing:'正在识别…',ocrReady:'请选择一张清晰的圣经页面照片。',ocrFirstUse:'首次识别需要联网加载 OCR 中文/英文语言模型；之后浏览器通常会缓存。',recognizedText:'识别到的经文',detectedReference:'识别到的出处',saveAsVerse:'保存到经文收藏',addToToday:'加入今天的日记',ocrNoImage:'请先选择照片。',ocrFailed:'识别失败，请更换更清晰的照片或稍后重试。',ocrDone:'识别完成，请检查并修改文字后再保存。',ocrSaved:'已保存到经文收藏。',ocrAddedToday:'已加入今天的日记。',ocrEditNotice:'OCR 可能出现错字；正式保存前请核对原文。'
-},
-en:{
-appName:'Spiritual Journal',tagline:'Record quietly. Look back clearly.',todayTitle:'What do you want to remember today?',todayDesc:'Scripture, gratitude, prayer, and the moments worth keeping.',
-startJournal:'Write today’s journal',prayers:'Prayer Requests',gratitude:'Gratitude',gratitudeHint:'Record what you are thankful for',verses:'Saved Scripture',review:'Review',reviewHint:'Look back through the timeline',
-recent:'Recent Entries',seeAll:'See all',add:'Add',searchVerses:'Search scripture, topics, or notes',searchJournal:'Search journals, gratitude, prayer, scripture',calendarView:'Calendar',timelineView:'Timeline',
-more:'More',backup:'Backup & Restore',backupDesc:'Export journals, prayer requests, gratitude, scripture, and settings. Images are not included in this version.',exportJson:'Export JSON',importJson:'Import JSON',
-privacy:'Privacy',privacyDesc:'This version stores data locally in this browser/device and does not upload it automatically.',principle:'Reflection Principle',principleDesc:'The app helps preserve, organize, and review what you write. It does not declare that an event is necessarily a divine revelation or God’s will.',
-home:'Home',prayersShort:'Prayer',versesShort:'Scripture',settings:'Settings',language:'Language',theme:'Appearance',system:'System',chinese:'中文',english:'English',light:'Light',dark:'Dark',close:'Close',
-save:'Save',delete:'Delete',edit:'Edit',title:'Title',category:'Category',status:'Status',notes:'Notes',progress:'Progress notes',ongoing:'Ongoing',waiting:'Waiting',answered:'Answered',closed:'Closed',
-journal:'Spiritual Journal',scripture:'Today’s Scripture',scriptureRef:'Reference',scriptureReminder:'What this scripture reminds me',todayGratitude:'Today’s Gratitude',todayPrayer:'Today’s Prayer',todayEvents:'What happened today',
-guidance:'Guidance / reminders I noticed',surrender:'What I need to surrender',oneLine:'One-line summary',favorite:'Important entry',verseText:'Scripture text',reference:'Reference',tags:'Topic tags',reflection:'My reflection / context',
-newPrayer:'New Prayer Request',editPrayer:'Edit Prayer Request',newVerse:'New Scripture',editVerse:'Edit Scripture',quickGratitude:'Quick Gratitude',prayerCount:' active',verseCount:' saved',noRecent:'No journal entries yet.',
-noPrayers:'No prayer requests yet.',noVerses:'No saved scripture yet.',noJournal:'No matching entries.',confirmDelete:'Delete this entry?',importOk:'Backup imported.',importFail:'Could not import: invalid file format.',all:'All statuses',
-scanScripture:'📷 Scan',scanTitle:'Scan Scripture',takePhoto:'Take photo / choose image',recognize:'Recognize text',recognizing:'Recognizing…',ocrReady:'Choose a clear photo of a Bible page.',ocrFirstUse:'The first scan needs internet access to load Chinese/English OCR language data; browsers usually cache it afterward.',recognizedText:'Recognized scripture',detectedReference:'Detected reference',saveAsVerse:'Save to Scripture',addToToday:'Add to today’s journal',ocrNoImage:'Choose an image first.',ocrFailed:'Recognition failed. Try a clearer photo or retry later.',ocrDone:'Recognition complete. Check and edit the text before saving.',ocrSaved:'Saved to Scripture.',ocrAddedToday:'Added to today’s journal.',ocrEditNotice:'OCR can make mistakes. Please verify the text against the photo before saving.'
-}};
-function lang(){let l=db.settings.language;if(l==='system') return navigator.language.toLowerCase().startsWith('zh')?'zh':'en'; return l==='en'?'en':'zh'}
-function tr(k){return (T[lang()]||T.zh)[k]||k}
-function loadDB(){try{return {...defaultDB,...JSON.parse(localStorage.getItem(DB_KEY)||'{}')}}catch(e){return structuredClone(defaultDB)}}
-function saveDB(){localStorage.setItem(DB_KEY,JSON.stringify(db)); renderAll()}
-function id(){return (crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random().toString(16).slice(2))}
+function load(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return{}}}
+function today(){let d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function uid(){return crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random()}
+function migrate(r){
+  let d={...DEF,...r,settings:{...DEF.settings,...(r.settings||{})}};
+  d.questions=Array.isArray(r.questions)?r.questions:[];
+  d.prayerLogs=Array.isArray(r.prayerLogs)?r.prayerLogs:[];
+  d.gratitudes=Array.isArray(r.gratitudes)?r.gratitudes:[];
+  d.dailySummaries=Array.isArray(r.dailySummaries)?r.dailySummaries:[];
+  d.verses=(Array.isArray(r.verses)?r.verses:[]).map(v=>({...v,date:v.date||(v.createdAt||'').slice(0,10)||today(),note:v.note||v.reflection||''}));
+  d.prayers=(Array.isArray(r.prayers)?r.prayers:[]).map(p=>({...p,details:p.details||p.notes||'',category:p.category||'其他',status:p.status||'ongoing'}));
+  if(Array.isArray(r.journals)) r.journals.forEach(j=>{if(j.date&&!d.dailySummaries.some(x=>x.date===j.date)) d.dailySummaries.push({id:j.id||uid(),date:j.date,reflection:j.reminder||j.guidance||'',oneLine:j.oneLine||'',legacy:true})});
+  return d;
+}
+function save(){localStorage.setItem(KEY,JSON.stringify(db));renderAll()}
 function esc(s=''){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function lines(s=''){return esc(s).replace(/\n/g,'<br>')}
-function fmtDate(x){return new Intl.DateTimeFormat(lang()==='zh'?'zh-CN':'en-CA',{year:'numeric',month:'long',day:'numeric',weekday:'short'}).format(new Date(x+'T12:00:00'))}
-function todayISO(){let d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
-function applyI18n(){document.documentElement.lang=lang()==='zh'?'zh-CN':'en'; document.querySelectorAll('[data-i18n]').forEach(e=>e.textContent=tr(e.dataset.i18n)); document.querySelectorAll('[data-i18n-ph]').forEach(e=>e.placeholder=tr(e.dataset.i18nPh)); document.getElementById('todayText').textContent=fmtDate(todayISO());}
-function applyTheme(){document.documentElement.dataset.theme=db.settings.theme||'system'; let meta=document.querySelector('meta[name=theme-color]'); meta.content=(db.settings.theme==='dark')?'#1f241f':'#f5f1e7'}
-function go(s){currentScreen=s; document.querySelectorAll('.screen').forEach(e=>e.classList.toggle('active',e.id===s)); document.querySelectorAll('.nav button').forEach(e=>e.classList.toggle('active',e.dataset.screen===s)); renderAll(); window.scrollTo({top:0,behavior:'smooth'})}
-function contextAdd(){if(currentScreen==='prayers')openPrayer();else if(currentScreen==='verses')openVerse();else openJournal()}
-function openModal(html){document.getElementById('sheet').innerHTML=html; document.getElementById('modal').classList.add('open'); document.body.style.overflow='hidden'}
-function closeModal(){document.getElementById('modal').classList.remove('open');document.body.style.overflow=''}
-document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()})
-
-function openJournal(entryId){
- const existing=entryId?db.journals.find(x=>x.id===entryId):db.journals.find(x=>x.date===todayISO());
- const x=existing||{id:id(),date:todayISO(),scripture:'',scriptureRef:'',reminder:'',gratitude:'',prayer:'',events:'',guidance:'',surrender:'',oneLine:'',favorite:false};
- openModal(`<div class="sheet-head"><h2>${tr('journal')}</h2><button class="iconbtn" onclick="closeModal()">✕</button></div>
- <div class="field"><label>${tr('scripture')}</label><textarea id="j_scripture">${esc(x.scripture)}</textarea></div>
- <div class="field"><label>${tr('scriptureRef')}</label><input id="j_ref" value="${esc(x.scriptureRef)}"></div>
- <div class="field"><label>${tr('scriptureReminder')}</label><textarea id="j_reminder">${esc(x.reminder)}</textarea></div>
- <div class="field"><label>${tr('todayGratitude')}</label><textarea id="j_gratitude">${esc(x.gratitude)}</textarea></div>
- <div class="field"><label>${tr('todayPrayer')}</label><textarea id="j_prayer">${esc(x.prayer)}</textarea></div>
- <div class="field"><label>${tr('todayEvents')}</label><textarea id="j_events">${esc(x.events)}</textarea></div>
- <div class="field"><label>${tr('guidance')}</label><textarea id="j_guidance">${esc(x.guidance)}</textarea></div>
- <div class="field"><label>${tr('surrender')}</label><textarea id="j_surrender">${esc(x.surrender)}</textarea></div>
- <div class="field"><label>${tr('oneLine')}</label><input id="j_one" value="${esc(x.oneLine)}"></div>
- <div class="field"><label><input id="j_fav" type="checkbox" style="width:auto" ${x.favorite?'checked':''}> ${tr('favorite')}</label></div>
- <div class="actions"><button class="primary" onclick="saveJournal('${x.id}',${existing?'true':'false'})">${tr('save')}</button>${existing?`<button class="danger" onclick="deleteJournal('${x.id}')">${tr('delete')}</button>`:''}</div>`)
-}
-function saveJournal(jid,exists){
- const x={id:jid,date:exists?(db.journals.find(j=>j.id===jid)?.date||todayISO()):todayISO(),scripture:val('j_scripture'),scriptureRef:val('j_ref'),reminder:val('j_reminder'),gratitude:val('j_gratitude'),prayer:val('j_prayer'),events:val('j_events'),guidance:val('j_guidance'),surrender:val('j_surrender'),oneLine:val('j_one'),favorite:document.getElementById('j_fav').checked,updatedAt:new Date().toISOString()};
- let i=db.journals.findIndex(j=>j.id===jid); if(i>=0)db.journals[i]=x; else db.journals.push(x); saveDB(); closeModal()
-}
-function deleteJournal(jid){if(confirm(tr('confirmDelete'))){db.journals=db.journals.filter(x=>x.id!==jid);saveDB();closeModal()}}
-function openQuick(type){if(type!=='gratitude')return; const x=db.journals.find(j=>j.date===todayISO()); openModal(`<div class="sheet-head"><h2>${tr('quickGratitude')}</h2><button class="iconbtn" onclick="closeModal()">✕</button></div><div class="field"><textarea id="qg">${esc(x?.gratitude||'')}</textarea></div><button class="primary" onclick="saveQuickGratitude()">${tr('save')}</button>`)}
-function saveQuickGratitude(){let x=db.journals.find(j=>j.date===todayISO()); if(!x){x={id:id(),date:todayISO(),scripture:'',scriptureRef:'',reminder:'',gratitude:'',prayer:'',events:'',guidance:'',surrender:'',oneLine:'',favorite:false};db.journals.push(x)}x.gratitude=val('qg');x.updatedAt=new Date().toISOString();saveDB();closeModal()}
-
-function openPrayer(pid){
- const x=pid?db.prayers.find(p=>p.id===pid):{id:id(),title:'',category:'',status:'ongoing',notes:'',progress:''};
- openModal(`<div class="sheet-head"><h2>${pid?tr('editPrayer'):tr('newPrayer')}</h2><button class="iconbtn" onclick="closeModal()">✕</button></div>
- <div class="field"><label>${tr('title')}</label><input id="p_title" value="${esc(x.title)}"></div>
- <div class="formgrid"><div class="field"><label>${tr('category')}</label><input id="p_cat" value="${esc(x.category)}"></div><div class="field"><label>${tr('status')}</label><select id="p_status"><option value="ongoing">${tr('ongoing')}</option><option value="waiting">${tr('waiting')}</option><option value="answered">${tr('answered')}</option><option value="closed">${tr('closed')}</option></select></div></div>
- <div class="field"><label>${tr('notes')}</label><textarea id="p_notes">${esc(x.notes)}</textarea></div><div class="field"><label>${tr('progress')}</label><textarea id="p_progress">${esc(x.progress)}</textarea></div>
- <div class="actions"><button class="primary" onclick="savePrayer('${x.id}')">${tr('save')}</button>${pid?`<button class="danger" onclick="deletePrayer('${x.id}')">${tr('delete')}</button>`:''}</div>`);
- document.getElementById('p_status').value=x.status;
-}
-function savePrayer(pid){let old=db.prayers.find(p=>p.id===pid);let x={id:pid,title:val('p_title'),category:val('p_cat'),status:val('p_status'),notes:val('p_notes'),progress:val('p_progress'),createdAt:old?.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()};let i=db.prayers.findIndex(p=>p.id===pid);if(i>=0)db.prayers[i]=x;else db.prayers.push(x);saveDB();closeModal()}
-function deletePrayer(pid){if(confirm(tr('confirmDelete'))){db.prayers=db.prayers.filter(x=>x.id!==pid);saveDB();closeModal()}}
-
-function openVerse(vid){
- const x=vid?db.verses.find(v=>v.id===vid):{id:id(),text:'',reference:'',tags:'',reflection:''};
- openModal(`<div class="sheet-head"><h2>${vid?tr('editVerse'):tr('newVerse')}</h2><button class="iconbtn" onclick="closeModal()">✕</button></div>
- <div class="field"><label>${tr('verseText')}</label><textarea id="v_text">${esc(x.text)}</textarea></div><div class="field"><label>${tr('reference')}</label><input id="v_ref" value="${esc(x.reference)}"></div>
- <div class="field"><label>${tr('tags')}</label><input id="v_tags" value="${esc(x.tags)}" placeholder="平安, 智慧, 感恩"></div><div class="field"><label>${tr('reflection')}</label><textarea id="v_refl">${esc(x.reflection)}</textarea></div>
- <div class="actions"><button class="primary" onclick="saveVerse('${x.id}')">${tr('save')}</button>${vid?`<button class="danger" onclick="deleteVerse('${x.id}')">${tr('delete')}</button>`:''}</div>`)
-}
-function saveVerse(vid){let old=db.verses.find(v=>v.id===vid);let x={id:vid,text:val('v_text'),reference:val('v_ref'),tags:val('v_tags'),reflection:val('v_refl'),source:old?.source||'manual',createdAt:old?.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()};let i=db.verses.findIndex(v=>v.id===vid);if(i>=0)db.verses[i]=x;else db.verses.push(x);saveDB();closeModal()}
-function deleteVerse(vid){if(confirm(tr('confirmDelete'))){db.verses=db.verses.filter(x=>x.id!==vid);saveDB();closeModal()}}
-
-
-
-let ocrImageFile=null, ocrImageURL='';
-let cropState={x:.08,y:.18,w:.84,h:.36,drag:false,sx:0,sy:0};
-
-function openScriptureScan(){
-  ocrImageFile=null;
-  if(ocrImageURL){URL.revokeObjectURL(ocrImageURL);ocrImageURL=''}
-  cropState={x:.08,y:.18,w:.84,h:.36,drag:false,sx:0,sy:0};
-  openModal(`<div class="sheet-head"><h2>${tr('scanTitle')}</h2><button class="iconbtn" onclick="closeScriptureScan()">✕</button></div>
-    <div class="field"><input id="ocr_file" type="file" accept="image/*" capture="environment" onchange="handleOcrImage(event)"></div>
-    <div id="crop_wrap" style="display:none"><div id="crop_stage" class="crop-stage"><img id="ocr_preview"><div id="crop_box" class="crop-box"></div></div>
-    <div class="crop-hint">拖动框选真正需要识别的经文。尽量不要把整页、页码、标题或相邻栏一起框进去。</div>
-    <div class="actions"><button class="secondary" onclick="resetCrop()">重置裁剪</button></div></div>
-    <div class="field"><label>识别模式</label><select id="ocr_mode"><option value="auto">自动：高精度优先 / 本地备用</option><option value="high">仅高精度后端</option><option value="local">仅本地 OCR</option></select></div>
-    <div class="actions"><button id="ocr_start" class="primary" onclick="runScriptureOCR()">${tr('recognize')}</button></div>
-    <div class="progress" style="margin-top:12px"><div id="ocr_progress"></div></div><div id="ocr_status" class="ocr-status">${tr('ocrReady')}</div>
-    <div id="ocr_result_wrap" style="display:none"><div class="field"><label>${tr('recognizedText')}</label><textarea id="ocr_text" style="min-height:180px"></textarea></div>
-    <div class="field"><label>${tr('detectedReference')}</label><input id="ocr_ref"></div><p class="note">${tr('ocrEditNotice')}</p>
-    <div class="actions"><button class="primary" onclick="saveOcrVerse()">${tr('saveAsVerse')}</button><button class="secondary" onclick="addOcrToToday()">${tr('addToToday')}</button></div></div>`)
-}
-
-function closeScriptureScan(){if(ocrImageURL){URL.revokeObjectURL(ocrImageURL);ocrImageURL=''}ocrImageFile=null;closeModal()}
-
-function handleOcrImage(e){
-  const f=e.target.files?.[0]; if(!f)return; ocrImageFile=f;
-  if(ocrImageURL)URL.revokeObjectURL(ocrImageURL); ocrImageURL=URL.createObjectURL(f);
-  const img=document.getElementById('ocr_preview');
-  img.onload=()=>{document.getElementById('crop_wrap').style.display='block';setupCropper();drawCrop()};
-  img.src=ocrImageURL; document.getElementById('ocr_status').textContent='请先框选目标经文区域，再开始识别。';
-}
-
-function setupCropper(){
-  const stage=document.getElementById('crop_stage');
-  const pos=e=>{const r=stage.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width,y:(e.clientY-r.top)/r.height}};
-  stage.onpointerdown=e=>{e.preventDefault();const p=pos(e);cropState.drag=true;cropState.sx=p.x;cropState.sy=p.y;cropState.x=p.x;cropState.y=p.y;cropState.w=.01;cropState.h=.01;drawCrop()};
-  stage.onpointermove=e=>{if(!cropState.drag)return;e.preventDefault();const p=pos(e);cropState.x=Math.max(0,Math.min(cropState.sx,p.x));cropState.y=Math.max(0,Math.min(cropState.sy,p.y));cropState.w=Math.min(1-cropState.x,Math.max(.03,Math.abs(p.x-cropState.sx)));cropState.h=Math.min(1-cropState.y,Math.max(.03,Math.abs(p.y-cropState.sy)));drawCrop()};
-  stage.onpointerup=()=>cropState.drag=false; stage.onpointercancel=()=>cropState.drag=false;
-}
-function drawCrop(){const b=document.getElementById('crop_box');if(!b)return;b.style.display='block';b.style.left=cropState.x*100+'%';b.style.top=cropState.y*100+'%';b.style.width=cropState.w*100+'%';b.style.height=cropState.h*100+'%'}
-function resetCrop(){cropState={x:.08,y:.18,w:.84,h:.36,drag:false,sx:0,sy:0};drawCrop()}
-
-async function getCroppedBlob(){
-  const img=document.getElementById('ocr_preview'); if(!img?.naturalWidth)throw Error('image-not-ready');
-  const sx=Math.round(cropState.x*img.naturalWidth), sy=Math.round(cropState.y*img.naturalHeight);
-  const sw=Math.max(20,Math.round(cropState.w*img.naturalWidth)), sh=Math.max(20,Math.round(cropState.h*img.naturalHeight));
-  const scale=Math.min(1,1800/sw), c=document.createElement('canvas'); c.width=Math.round(sw*scale); c.height=Math.round(sh*scale);
-  const ctx=c.getContext('2d'); ctx.filter='grayscale(1) contrast(1.28)'; ctx.drawImage(img,sx,sy,sw,sh,0,0,c.width,c.height);
-  return new Promise((ok,fail)=>c.toBlob(b=>b?ok(b):fail(Error('blob-failed')),'image/jpeg',.92));
-}
-
-function cleanOcrText(t){return String(t||'').replace(/\r/g,'').replace(/[ \t]+\n/g,'\n').replace(/\n{3,}/g,'\n\n').replace(/[|¦]/g,'').trim()}
-
-function guessBibleReference(text){
-  const s=String(text||'').replace(/\s+/g,' ');
-  const books='创世记|出埃及记|利未记|民数记|申命记|约书亚记|士师记|路得记|撒母耳记上|撒母耳记下|列王纪上|列王纪下|历代志上|历代志下|以斯拉记|尼希米记|以斯帖记|约伯记|诗篇|箴言|传道书|雅歌|以赛亚书|耶利米书|耶利米哀歌|以西结书|但以理书|何西阿书|约珥书|阿摩司书|俄巴底亚书|约拿书|弥迦书|那鸿书|哈巴谷书|西番雅书|哈该书|撒迦利亚书|玛拉基书|马太福音|马可福音|路加福音|约翰福音|使徒行传|罗马书|哥林多前书|哥林多后书|加拉太书|以弗所书|腓立比书|歌罗西书|帖撒罗尼迦前书|帖撒罗尼迦后书|提摩太前书|提摩太后书|提多书|腓利门书|希伯来书|雅各书|彼得前书|彼得后书|约翰一书|约翰二书|约翰三书|犹大书|启示录';
-  const m=s.match(new RegExp('('+books+')\\s*(\\d{1,3})\\s*[:：]?\\s*(\\d{1,3})(?:\\s*[-–—至]\\s*(\\d{1,3}))?'));
-  return m?`${m[1]} ${m[2]}:${m[3]}${m[4]?'-'+m[4]:''}`:'';
-}
-
-async function highOCR(blob){
-  const url=(db.settings.ocrBackendUrl||'').trim(); if(!url)throw Error('backend-not-configured');
-  const fd=new FormData(); fd.append('image',blob,'scripture.jpg'); fd.append('task','scripture_ocr'); fd.append('language','zh,en');
-  const c=new AbortController(), timer=setTimeout(()=>c.abort(),30000);
-  try{
-    const r=await fetch(url,{method:'POST',body:fd,signal:c.signal}); if(!r.ok)throw Error('http-'+r.status);
-    const d=await r.json(), text=cleanOcrText(d.text||d.ocrText||''); if(!text)throw Error('empty');
-    return {text,reference:(d.reference||guessBibleReference(text)||'').trim(),source:'high'};
-  }finally{clearTimeout(timer)}
-}
-
-async function localOCR(blob,status,bar){
-  let worker;
-  try{
-    worker=await Tesseract.createWorker(['chi_sim','eng'],1,{logger:m=>{if(m.status)status.textContent='本地 OCR：'+m.status;if(typeof m.progress==='number')bar.style.width=Math.max(4,Math.round(m.progress*100))+'%'}});
-    const r=await worker.recognize(blob), text=cleanOcrText(r?.data?.text||''); if(!text)throw Error('empty');
-    return {text,reference:guessBibleReference(text),source:'local'};
-  }finally{if(worker){try{await worker.terminate()}catch(_){}}}
-}
-
-async function runScriptureOCR(){
-  if(!ocrImageFile){alert(tr('ocrNoImage'));return}
-  const btn=document.getElementById('ocr_start'),status=document.getElementById('ocr_status'),bar=document.getElementById('ocr_progress'),mode=document.getElementById('ocr_mode').value;
-  btn.disabled=true; btn.textContent=tr('recognizing'); bar.style.width='5%';
-  try{
-    const blob=await getCroppedBlob(); let out=null,err=null;
-    if(mode!=='local'){try{status.textContent='正在使用高精度识别…';out=await highOCR(blob)}catch(e){err=e;if(mode==='high')throw e}}
-    if(!out){status.textContent=err?'高精度识别不可用，已切换本地 OCR…':'正在使用本地 OCR…';out=await localOCR(blob,status,bar)}
-    document.getElementById('ocr_text').value=out.text;document.getElementById('ocr_ref').value=out.reference||'';document.getElementById('ocr_result_wrap').style.display='block';
-    bar.style.width='100%';status.textContent=(out.source==='high'?'高精度识别完成。':'本地 OCR 完成。')+' 请核对原文后再保存。';
-  }catch(e){console.error(e);status.textContent=String(e.message).includes('backend-not-configured')?'尚未配置高精度 OCR Backend URL。请到“更多”中配置，或使用自动/本地模式。':'识别失败，请重试。';bar.style.width='0%'}
-  finally{btn.disabled=false;btn.textContent=tr('recognize')}
-}
-
-function saveOcrVerse(){const text=val('ocr_text').trim();if(!text)return;db.verses.push({id:id(),text,reference:val('ocr_ref').trim(),tags:'',reflection:'',source:'ocr',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()});saveDB();alert(tr('ocrSaved'));closeScriptureScan();go('verses')}
-function addOcrToToday(){const text=val('ocr_text').trim();if(!text)return;let x=db.journals.find(j=>j.date===todayISO());if(!x){x={id:id(),date:todayISO(),scripture:'',scriptureRef:'',reminder:'',gratitude:'',prayer:'',events:'',guidance:'',surrender:'',oneLine:'',favorite:false};db.journals.push(x)}x.scripture=text;x.scriptureRef=val('ocr_ref').trim();x.updatedAt=new Date().toISOString();saveDB();alert(tr('ocrAddedToday'));closeScriptureScan();openJournal(x.id)}
-function saveOcrBackend(){const el=document.getElementById('ocrBackendUrl');if(!el)return;db.settings.ocrBackendUrl=(el.value||'').trim();saveDB();alert('识别设置已保存。')}
-
-function renderHome(){
- let recent=[...db.journals].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,4), el=document.getElementById('recentList');
- el.innerHTML=recent.length?recent.map(j=>journalCard(j)).join(''):`<div class="empty">${tr('noRecent')}</div>`;
- let active=db.prayers.filter(p=>['ongoing','waiting'].includes(p.status)).length; document.getElementById('prayerCount').textContent=active+(lang()==='zh'?tr('prayerCount'):tr('prayerCount'));
- document.getElementById('verseCount').textContent=db.verses.length+(lang()==='zh'?tr('verseCount'):tr('verseCount'));
-}
-function journalCard(j){let summary=j.oneLine||j.gratitude||j.events||j.scripture||'—'; return `<div class="card" onclick="openJournal('${j.id}')"><div class="row"><div class="card-title">${j.favorite?'★ ':''}${fmtDate(j.date)}</div><span class="meta">${esc(j.scriptureRef||'')}</span></div><div>${lines(summary).slice(0,300)}</div></div>`}
-function renderPrayers(){let f=document.getElementById('prayerFilter')?.value||'all'; let xs=[...db.prayers].filter(p=>f==='all'||p.status===f).sort((a,b)=>(b.updatedAt||'').localeCompare(a.updatedAt||'')); document.getElementById('prayerList').innerHTML=xs.length?xs.map(p=>`<div class="card" onclick="openPrayer('${p.id}')"><div class="row"><div class="card-title">${esc(p.title||'—')}</div><span class="status">${tr(p.status)}</span></div><div class="meta">${esc(p.category||'')}</div>${p.notes?`<div style="margin-top:8px">${lines(p.notes)}</div>`:''}</div>`).join(''):`<div class="empty">${tr('noPrayers')}</div>`}
-
-const BIBLE_BOOK_ORDER = [
-'创世记','出埃及记','利未记','民数记','申命记','约书亚记','士师记','路得记','撒母耳记上','撒母耳记下',
-'列王纪上','列王纪下','历代志上','历代志下','以斯拉记','尼希米记','以斯帖记','约伯记','诗篇','箴言',
-'传道书','雅歌','以赛亚书','耶利米书','耶利米哀歌','以西结书','但以理书','何西阿书','约珥书','阿摩司书',
-'俄巴底亚书','约拿书','弥迦书','那鸿书','哈巴谷书','西番雅书','哈该书','撒迦利亚书','玛拉基书',
-'马太福音','马可福音','路加福音','约翰福音','使徒行传','罗马书','哥林多前书','哥林多后书','加拉太书',
-'以弗所书','腓立比书','歌罗西书','帖撒罗尼迦前书','帖撒罗尼迦后书','提摩太前书','提摩太后书','提多书',
-'腓利门书','希伯来书','雅各书','彼得前书','彼得后书','约翰一书','约翰二书','约翰三书','犹大书','启示录'
-];
-
-const EN_BOOK_MAP = {
-'genesis':'创世记','exodus':'出埃及记','leviticus':'利未记','numbers':'民数记','deuteronomy':'申命记',
-'joshua':'约书亚记','judges':'士师记','ruth':'路得记','1 samuel':'撒母耳记上','2 samuel':'撒母耳记下',
-'1 kings':'列王纪上','2 kings':'列王纪下','1 chronicles':'历代志上','2 chronicles':'历代志下',
-'ezra':'以斯拉记','nehemiah':'尼希米记','esther':'以斯帖记','job':'约伯记','psalm':'诗篇','psalms':'诗篇',
-'proverbs':'箴言','ecclesiastes':'传道书','song of songs':'雅歌','song of solomon':'雅歌','isaiah':'以赛亚书',
-'jeremiah':'耶利米书','lamentations':'耶利米哀歌','ezekiel':'以西结书','daniel':'但以理书','hosea':'何西阿书',
-'joel':'约珥书','amos':'阿摩司书','obadiah':'俄巴底亚书','jonah':'约拿书','micah':'弥迦书','nahum':'那鸿书',
-'habakkuk':'哈巴谷书','zephaniah':'西番雅书','haggai':'哈该书','zechariah':'撒迦利亚书','malachi':'玛拉基书',
-'matthew':'马太福音','mark':'马可福音','luke':'路加福音','john':'约翰福音','acts':'使徒行传','romans':'罗马书',
-'1 corinthians':'哥林多前书','2 corinthians':'哥林多后书','galatians':'加拉太书','ephesians':'以弗所书',
-'philippians':'腓立比书','colossians':'歌罗西书','1 thessalonians':'帖撒罗尼迦前书','2 thessalonians':'帖撒罗尼迦后书',
-'1 timothy':'提摩太前书','2 timothy':'提摩太后书','titus':'提多书','philemon':'腓利门书','hebrews':'希伯来书',
-'james':'雅各书','1 peter':'彼得前书','2 peter':'彼得后书','1 john':'约翰一书','2 john':'约翰二书','3 john':'约翰三书',
-'jude':'犹大书','revelation':'启示录'
-};
-
-function chineseNumberToInt(s){
-  if(s==null || s==='') return null;
-  s=String(s).trim();
-  if(/^\d+$/.test(s)) return parseInt(s,10);
-  const digit={'零':0,'〇':0,'一':1,'二':2,'两':2,'三':3,'四':4,'五':5,'六':6,'七':7,'八':8,'九':9};
-  if(s==='十') return 10;
-  let total=0, current=0, seen=false;
-  for(const ch of s){
-    if(ch in digit){ current=digit[ch]; seen=true; }
-    else if(ch==='十'){ total += (current||1)*10; current=0; seen=true; }
-    else if(ch==='百'){ total += (current||1)*100; current=0; seen=true; }
-    else return null;
-  }
-  return seen ? total+current : null;
-}
-
-function normalizeBookName(ref){
-  const raw=String(ref||'').trim();
-  for(const b of BIBLE_BOOK_ORDER){
-    if(raw.includes(b)) return b;
-  }
-  const lower=raw.toLowerCase().replace(/[.]/g,'').replace(/\s+/g,' ').trim();
-  const names=Object.keys(EN_BOOK_MAP).sort((a,b)=>b.length-a.length);
-  for(const name of names){
-    if(lower.startsWith(name+' ') || lower===name || lower.includes(name+' ')) return EN_BOOK_MAP[name];
-  }
-  return null;
-}
-
-function parseBibleReference(ref){
-  const raw=String(ref||'').trim();
-  if(!raw) return null;
-  const book=normalizeBookName(raw);
-  if(!book) return null;
-
-  // Chinese forms: 马太福音十八章19节 / 马太福音 18章19节 / 马太福音 18:19
-  let m=raw.match(/([零〇一二两三四五六七八九十百\d]+)\s*章\s*([零〇一二两三四五六七八九十百\d]+)\s*节?/);
-  if(!m) m=raw.match(/([零〇一二两三四五六七八九十百\d]+)\s*[:：]\s*([零〇一二两三四五六七八九十百\d]+)/);
-  if(!m){
-    // English/numeric fallback after book name
-    m=raw.match(/(\d{1,3})\s*[:：]\s*(\d{1,3})/);
-  }
-  if(!m) return {book,bookIndex:BIBLE_BOOK_ORDER.indexOf(book),chapter:999,verse:999,raw};
-
-  const chapter=chineseNumberToInt(m[1]);
-  const verse=chineseNumberToInt(m[2]);
-  if(chapter==null || verse==null) return {book,bookIndex:BIBLE_BOOK_ORDER.indexOf(book),chapter:999,verse:999,raw};
-
-  return {book,bookIndex:BIBLE_BOOK_ORDER.indexOf(book),chapter,verse,raw};
-}
-
-function compareBibleReference(aRef,bRef){
-  const a=parseBibleReference(aRef), b=parseBibleReference(bRef);
-  if(a && b){
-    if(a.bookIndex!==b.bookIndex) return a.bookIndex-b.bookIndex;
-    if(a.chapter!==b.chapter) return a.chapter-b.chapter;
-    if(a.verse!==b.verse) return a.verse-b.verse;
-    return String(a.raw).localeCompare(String(b.raw),lang()==='zh'?'zh-CN':'en');
-  }
-  if(a) return -1;
-  if(b) return 1;
-  return String(aRef||'').localeCompare(String(bRef||''),lang()==='zh'?'zh-CN':'en');
-}
-
-function renderVerses(){
-  const q=(document.getElementById('verseSearch')?.value||'').toLowerCase(),sf=document.getElementById('verseSourceFilter')?.value||'all',nf=document.getElementById('verseNoteFilter')?.value||'all',sort=document.getElementById('verseSort')?.value||'newest';
-  let xs=[...db.verses].filter(v=>{const src=v.source||'manual',has=!!String(v.reflection||'').trim();return [v.text,v.reference,v.tags,v.reflection].join(' ').toLowerCase().includes(q)&&(sf==='all'||src===sf)&&(nf==='all'||(nf==='with'&&has)||(nf==='without'&&!has))});
-  xs.sort((a,b)=>sort==='oldest'?(a.createdAt||'').localeCompare(b.createdAt||''):sort==='updated'?(b.updatedAt||'').localeCompare(a.updatedAt||''):sort==='reference'?compareBibleReference(a.reference,b.reference):(b.createdAt||'').localeCompare(a.createdAt||''));
-  document.getElementById('verseList').innerHTML=xs.length?xs.map(v=>`<div class="card" onclick="openVerse('${v.id}')"><div class="quote">${lines(v.text||'—')}</div><div class="meta" style="margin-top:8px">${esc(v.reference||'')}</div><div>${(v.tags||'').split(',').filter(Boolean).map(t=>`<span class="tag">${esc(t.trim())}</span>`).join('')}</div>${v.reflection?`<div style="margin-top:10px">${lines(v.reflection)}</div>`:''}</div>`).join(''):`<div class="empty">${tr('noVerses')}</div>`;
-}
-function renderReview(){if(reviewMode==='calendar'){renderCalendar();return} let q=(document.getElementById('reviewSearch')?.value||'').toLowerCase();let xs=[...db.journals].filter(j=>Object.values(j).join(' ').toLowerCase().includes(q)).sort((a,b)=>b.date.localeCompare(a.date));document.getElementById('timeline').innerHTML=xs.length?xs.map(j=>journalCard(j)).join(''):`<div class="empty">${tr('noJournal')}</div>`}
-function toggleReviewMode(){reviewMode=reviewMode==='timeline'?'calendar':'timeline';document.getElementById('timelineWrap').style.display=reviewMode==='timeline'?'block':'none';document.getElementById('calendarWrap').style.display=reviewMode==='calendar'?'block':'none';document.getElementById('reviewModeBtn').textContent=reviewMode==='timeline'?tr('calendarView'):tr('timelineView');renderReview()}
-function changeMonth(n){calDate=new Date(calDate.getFullYear(),calDate.getMonth()+n,1);renderCalendar()}
-function renderCalendar(){let y=calDate.getFullYear(),m=calDate.getMonth(),first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate();document.getElementById('monthLabel').textContent=new Intl.DateTimeFormat(lang()==='zh'?'zh-CN':'en-CA',{year:'numeric',month:'long'}).format(calDate);let heads=lang()==='zh'?['日','一','二','三','四','五','六']:['S','M','T','W','T','F','S'];let html=heads.map(h=>`<div class="cal-head">${h}</div>`).join('');for(let i=0;i<first;i++)html+='<div></div>';for(let d=1;d<=days;d++){let iso=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`,j=db.journals.find(x=>x.date===iso);html+=`<button class="day ${j?'has':''} ${iso===todayISO()?'today':''}" ${j?`onclick="openJournal('${j.id}')"`:''}>${d}</button>`}document.getElementById('calendar').innerHTML=html}
-function renderAll(){applyI18n();applyTheme();renderHome();renderPrayers();renderVerses();renderReview();const b=document.getElementById('ocrBackendUrl');if(b)b.value=db.settings.ocrBackendUrl||''}
-
-function openSettings(){
- openModal(`<div class="sheet-head"><h2>${tr('settings')}</h2><button class="iconbtn" onclick="closeModal()">✕</button></div>
- <div class="settings-group"><h3>${tr('language')}</h3><div class="seg"><button onclick="setLang('system')" class="${db.settings.language==='system'?'selected':''}">${tr('system')}</button><button onclick="setLang('zh')" class="${db.settings.language==='zh'?'selected':''}">${tr('chinese')}</button><button onclick="setLang('en')" class="${db.settings.language==='en'?'selected':''}">${tr('english')}</button></div></div>
- <div class="settings-group"><h3>${tr('theme')}</h3><div class="seg"><button onclick="setTheme('system')" class="${db.settings.theme==='system'?'selected':''}">${tr('system')}</button><button onclick="setTheme('light')" class="${db.settings.theme==='light'?'selected':''}">${tr('light')}</button><button onclick="setTheme('dark')" class="${db.settings.theme==='dark'?'selected':''}">${tr('dark')}</button></div></div>`)
-}
-function setLang(v){db.settings.language=v;saveDB();openSettings()}
-function setTheme(v){db.settings.theme=v;saveDB();openSettings()}
 function val(id){return document.getElementById(id)?.value||''}
-function exportData(){let blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`spiritual-journal-backup-${todayISO()}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
-function importData(e){let f=e.target.files?.[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let x=JSON.parse(r.result);if(!x||!Array.isArray(x.journals)||!Array.isArray(x.prayers)||!Array.isArray(x.verses))throw Error();db={...defaultDB,...x,settings:{...defaultDB.settings,...(x.settings||{})}};saveDB();alert(tr('importOk'))}catch(_){alert(tr('importFail'))}e.target.value=''};r.readAsText(f)}
-window.addEventListener('storage',()=>{db=loadDB();renderAll()});
-if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));
+function fmt(d){return new Intl.DateTimeFormat('zh-CN',{year:'numeric',month:'long',day:'numeric',weekday:'short'}).format(new Date(d+'T12:00:00'))}
+function modal(h){document.getElementById('sheet').innerHTML=h;document.getElementById('modal').classList.add('open');document.body.style.overflow='hidden'}
+function closeModal(){document.getElementById('modal').classList.remove('open');document.body.style.overflow=''}
+document.getElementById('modal').onclick=e=>{if(e.target.id==='modal')closeModal()}
+function go(s){screen=s;document.querySelectorAll('.screen').forEach(x=>x.classList.toggle('active',x.id===s));document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.s===s));renderAll();scrollTo(0,0)}
+function contextAdd(){screen==='questions'?openQuestion():screen==='prayer'?openPrayer():openVerse()}
+
+function openVerse(id){
+  let x=id?db.verses.find(v=>v.id===id):{id:uid(),date:today(),text:'',reference:'',tags:'',note:''};
+  modal(`<div class="sheethead"><h2>${id?'编辑经文':'摘录经文'}</h2><button class="iconbtn" onclick="closeModal()">✕</button></div>
+  <div class="field"><label>日期</label><input id="vd" type="date" value="${x.date}"></div>
+  <div class="field"><label>经文</label><textarea id="vt">${esc(x.text)}</textarea></div>
+  <div class="field"><label>出处</label><input id="vr" value="${esc(x.reference)}"></div>
+  <div class="field"><label>标签</label><input id="vg" value="${esc(x.tags||'')}"></div>
+  <div class="field"><label>为什么摘这句 / 简短笔记</label><textarea id="vn">${esc(x.note||'')}</textarea></div>
+  <button class="primary" onclick="saveVerse('${x.id}')">保存</button>`)
+}
+function saveVerse(id){
+  let old=db.verses.find(v=>v.id===id),x={id,date:val('vd')||today(),text:val('vt').trim(),reference:val('vr').trim(),tags:val('vg').trim(),note:val('vn').trim(),source:old?.source||'manual',createdAt:old?.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()},i=db.verses.findIndex(v=>v.id===id);
+  i>=0?db.verses[i]=x:db.verses.push(x);save();closeModal()
+}
+
+function openQuestion(id,vid){
+  let x=id?db.questions.find(q=>q.id===id):{id:uid(),date:today(),question:'',verseIds:vid?[vid]:[],status:'open',answer:''};
+  let opts=db.verses.map(v=>`<option value="${v.id}" ${(x.verseIds||[]).includes(v.id)?'selected':''}>${esc(v.reference||v.text.slice(0,28))}</option>`).join('');
+  modal(`<div class="sheethead"><h2>${id?'编辑问题':'记一个问题'}</h2><button class="iconbtn" onclick="closeModal()">✕</button></div>
+  <div class="field"><label>日期</label><input id="qd" type="date" value="${x.date}"></div>
+  <div class="field"><label>我的疑问</label><textarea id="qt">${esc(x.question)}</textarea></div>
+  <div class="field"><label>关联经文（可多选）</label><select id="qv" multiple size="5">${opts}</select></div>
+  <div class="field"><label>状态</label><select id="qs"><option value="open">待查</option><option value="resolved">已查</option><option value="hold">暂时保留</option></select></div>
+  <div class="field"><label>后来查到的答案 / 我的理解</label><textarea id="qa">${esc(x.answer||'')}</textarea></div>
+  <button class="primary" onclick="saveQuestion('${x.id}')">保存</button>`);
+  document.getElementById('qs').value=x.status
+}
+function saveQuestion(id){
+  let old=db.questions.find(q=>q.id===id),x={id,date:val('qd')||today(),question:val('qt').trim(),verseIds:[...document.getElementById('qv').selectedOptions].map(o=>o.value),status:val('qs'),answer:val('qa').trim(),createdAt:old?.createdAt||new Date().toISOString()},i=db.questions.findIndex(q=>q.id===id);
+  i>=0?db.questions[i]=x:db.questions.push(x);save();closeModal()
+}
+
+function openPrayer(id){
+  let x=id?db.prayers.find(p=>p.id===id):{id:uid(),title:'',category:'自己',status:'ongoing',details:'',progress:''};
+  modal(`<div class="sheethead"><h2>${id?'编辑祷告事项':'新增长期祷告事项'}</h2><button class="iconbtn" onclick="closeModal()">✕</button></div>
+  <div class="field"><label>事项</label><input id="pt" value="${esc(x.title)}"></div>
+  <div class="field"><label>分类</label><select id="pcat"><option>自己</option><option>家人</option><option>孩子</option><option>婚姻</option><option>工作</option><option>属灵成长</option><option>教会</option><option>朋友</option><option>健康</option><option>其他</option></select></div>
+  <div class="field"><label>状态</label><select id="ps"><option value="ongoing">持续祷告</option><option value="waiting">等候中</option><option value="answered">已蒙应允</option><option value="closed">已结束</option></select></div>
+  <div class="field"><label>具体内容</label><textarea id="pd">${esc(x.details||'')}</textarea></div>
+  <div class="field"><label>进展 / 蒙应允记录</label><textarea id="pp">${esc(x.progress||'')}</textarea></div>
+  <button class="primary" onclick="savePrayer('${x.id}')">保存</button>`);
+  document.getElementById('pcat').value=x.category;document.getElementById('ps').value=x.status
+}
+function savePrayer(id){
+  let old=db.prayers.find(p=>p.id===id),x={id,title:val('pt').trim(),category:val('pcat'),status:val('ps'),details:val('pd').trim(),progress:val('pp').trim(),createdAt:old?.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()},i=db.prayers.findIndex(p=>p.id===id);
+  i>=0?db.prayers[i]=x:db.prayers.push(x);save();closeModal()
+}
+
+function openPrayerToday(){
+  let active=db.prayers.filter(p=>!['answered','closed'].includes(p.status)),old=db.prayerLogs.filter(l=>l.date===today()&&l.prayerId);
+  let rows=active.map(p=>`<label class="check"><input class="pcheck" type="checkbox" value="${p.id}" ${old.some(l=>l.prayerId===p.id)?'checked':''}><span><strong>${esc(p.title)}</strong><div class="meta">${esc(p.category)}</div></span></label>`).join('');
+  let temp=db.prayerLogs.filter(l=>l.date===today()&&!l.prayerId).map(l=>l.text).join('\n');
+  modal(`<div class="sheethead"><h2>今日祷告</h2><button class="iconbtn" onclick="closeModal()">✕</button></div><div class="note">长期事项只勾选今天是否祷告过，不需要每天重写。</div>${rows||'<div class="empty">还没有长期祷告事项。</div>'}<div class="field"><label>今天临时想祷告的内容</label><textarea id="temp">${esc(temp)}</textarea></div><button class="primary" onclick="savePrayerToday()">保存</button>`)
+}
+function savePrayerToday(){
+  db.prayerLogs=db.prayerLogs.filter(l=>l.date!==today());
+  document.querySelectorAll('.pcheck:checked').forEach(x=>db.prayerLogs.push({id:uid(),date:today(),prayerId:x.value,text:''}));
+  let t=val('temp').trim();if(t)db.prayerLogs.push({id:uid(),date:today(),prayerId:null,text:t});
+  save();closeModal()
+}
+
+function openGratitude(){
+  let x=db.gratitudes.find(g=>g.date===today())||{id:uid(),text:''};
+  modal(`<div class="sheethead"><h2>今日感恩</h2><button class="iconbtn" onclick="closeModal()">✕</button></div><textarea id="gt">${esc(x.text)}</textarea><div class="actions"><button class="primary" onclick="saveGratitude('${x.id}')">保存</button></div>`)
+}
+function saveGratitude(id){let x={id,date:today(),text:val('gt').trim()},i=db.gratitudes.findIndex(g=>g.date===today());i>=0?db.gratitudes[i]=x:db.gratitudes.push(x);save();closeModal()}
+
+function openSummary(){
+  let x=db.dailySummaries.find(s=>s.date===today())||{id:uid(),reflection:'',oneLine:''};
+  modal(`<div class="sheethead"><h2>日终汇总</h2><button class="iconbtn" onclick="closeModal()">✕</button></div><div class="card">${snapshot(today())}</div><div class="field"><label>今天读完以后，我最想留下什么？</label><textarea id="sr">${esc(x.reflection||'')}</textarea></div><div class="field"><label>今日一句总结</label><input id="so" value="${esc(x.oneLine||'')}"></div><button class="primary" onclick="saveSummary('${x.id}')">保存今天</button>`)
+}
+function saveSummary(id){let x={id,date:today(),reflection:val('sr').trim(),oneLine:val('so').trim()},i=db.dailySummaries.findIndex(s=>s.date===today());i>=0?db.dailySummaries[i]=x:db.dailySummaries.push(x);save();closeModal()}
+function snapshot(d){return `<div class="body">${db.verses.filter(v=>v.date===d).length} 条经文 · ${db.questions.filter(q=>q.date===d).length} 个问题 · ${db.prayerLogs.filter(p=>p.date===d).length} 条祷告</div>`}
+
+function renderToday(){
+  let d=today(),vs=db.verses.filter(v=>v.date===d),qs=db.questions.filter(q=>q.date===d),ps=db.prayerLogs.filter(p=>p.date===d);
+  document.getElementById('todayDate').textContent=fmt(d);document.getElementById('vc').textContent=vs.length;document.getElementById('qc').textContent=qs.length;document.getElementById('pc').textContent=ps.length;
+  let a=[];
+  vs.forEach(v=>a.push(`<div class="card"><div class="quote">${lines(v.text)}</div><div class="meta">${esc(v.reference)}</div>${v.note?`<div class="body">${lines(v.note)}</div>`:''}<div class="actions"><button class="secondary" onclick="openQuestion(null,'${v.id}')">＋ 针对这段提问</button></div></div>`));
+  qs.forEach(q=>a.push(`<div class="card"><div class="title">？ ${esc(q.question)}</div>${linked(q.verseIds)}</div>`));
+  document.getElementById('todayStudy').innerHTML=a.length?a.join(''):'<div class="empty">今天还没有研经记录。</div>';
+  document.getElementById('todayPrayers').innerHTML=ps.length?ps.map(l=>{let p=db.prayers.find(x=>x.id===l.prayerId);return `<div class="card"><div class="title">🙏 ${p?esc(p.title):'临时祷告'}</div>${!p?`<div class="body">${lines(l.text)}</div>`:''}</div>`}).join(''):'<div class="empty">今天还没有记录祷告。</div>';
+  let s=db.dailySummaries.find(x=>x.date===d),g=db.gratitudes.find(x=>x.date===d);
+  document.getElementById('summaryCard').innerHTML=(g?.text||s?.reflection||s?.oneLine)?`${g?.text?`<div class="body">🌿 ${lines(g.text)}</div>`:''}${s?.reflection?`<div class="body">${lines(s.reflection)}</div>`:''}${s?.oneLine?`<div class="meta">一句话：${esc(s.oneLine)}</div>`:''}`:'<div class="note">白天只管记录，晚上再汇总，不需要重复抄经文或祷告。</div>'
+}
+function linked(ids=[]){return ids.map(id=>db.verses.find(v=>v.id===id)).filter(Boolean).map(v=>`<div class="meta">📖 ${esc(v.reference||v.text.slice(0,30))}</div>`).join('')}
+function cn(s){if(/^\d+$/.test(s))return +s;let d={'一':1,'二':2,'三':3,'四':4,'五':5,'六':6,'七':7,'八':8,'九':9,'十':10};return d[s]||999}
+function ref(r){let b=BOOKS.find(x=>String(r).includes(x));if(!b)return null;let m=String(r).match(/([一二三四五六七八九十\d]+)\s*(?:章|[:：])\s*([一二三四五六七八九十\d]+)/);return{b:BOOKS.indexOf(b),c:m?cn(m[1]):999,v:m?cn(m[2]):999}}
+function compare(a,b){let x=ref(a),y=ref(b);if(x&&!y)return-1;if(!x&&y)return 1;if(!x&&!y)return 0;return x.b-y.b||x.c-y.c||x.v-y.v}
+
+function renderBible(){
+  let q=(document.getElementById('verseSearch').value||'').toLowerCase(),f=document.getElementById('verseQFilter').value||'all';
+  let xs=db.verses.filter(v=>[v.text,v.reference,v.tags,v.note].join(' ').toLowerCase().includes(q)).filter(v=>{let h=db.questions.some(x=>(x.verseIds||[]).includes(v.id));return f==='all'||(f==='with'&&h)||(f==='without'&&!h)});
+  xs.sort(db.settings.verseSort==='reference'?(a,b)=>compare(a.reference,b.reference):db.settings.verseSort==='oldest'?(a,b)=>(a.createdAt||'').localeCompare(b.createdAt||''):(a,b)=>(b.createdAt||'').localeCompare(a.createdAt||''));
+  document.getElementById('verseSort').value=db.settings.verseSort;
+  document.getElementById('verseList').innerHTML=xs.length?xs.map(v=>`<div class="card" onclick="openVerse('${v.id}')"><div class="quote">${lines(v.text)}</div><div class="meta">${esc(v.reference)} · ${v.date}</div>${v.note?`<div class="body">${lines(v.note)}</div>`:''}</div>`).join(''):'<div class="empty">还没有经文记录。</div>'
+}
+function renderQuestions(){
+  let f=document.getElementById('qFilter').value||'all',xs=db.questions.filter(q=>f==='all'||q.status===f);
+  document.getElementById('questionList').innerHTML=xs.length?xs.map(q=>`<div class="card" onclick="openQuestion('${q.id}')"><div class="row"><div class="title">${esc(q.question)}</div><span class="tag">${q.status==='resolved'?'已查':q.status==='hold'?'暂时保留':'待查'}</span></div>${linked(q.verseIds)}${q.answer?`<div class="body">${lines(q.answer)}</div>`:''}</div>`).join(''):'<div class="empty">还没有问题。</div>'
+}
+function renderPrayers(){
+  let f=document.getElementById('pFilter').value||'all',xs=db.prayers.filter(p=>f==='all'||p.status===f);
+  document.getElementById('prayerList').innerHTML=xs.length?xs.map(p=>`<div class="card" onclick="openPrayer('${p.id}')"><div class="row"><div class="title">${esc(p.title)}</div><span class="tag">${{ongoing:'持续祷告',waiting:'等候中',answered:'已蒙应允',closed:'已结束'}[p.status]}</span></div><div class="meta">${esc(p.category)} · 已祷告 ${db.prayerLogs.filter(l=>l.prayerId===p.id).length} 次</div>${p.details?`<div class="body">${lines(p.details)}</div>`:''}</div>`).join(''):'<div class="empty">还没有长期祷告事项。</div>'
+}
+
+function openReview(){
+  let ds=[...new Set([...db.verses.map(x=>x.date),...db.questions.map(x=>x.date),...db.prayerLogs.map(x=>x.date),...db.dailySummaries.map(x=>x.date)].filter(Boolean))].sort().reverse();
+  modal(`<div class="sheethead"><h2>历史回顾</h2><button class="iconbtn" onclick="closeModal()">✕</button></div><div class="list">${ds.map(d=>`<div class="card"><div class="title">${fmt(d)}</div>${snapshot(d)}${db.dailySummaries.find(x=>x.date===d)?.oneLine?`<div class="meta">一句话：${esc(db.dailySummaries.find(x=>x.date===d).oneLine)}</div>`:''}</div>`).join('')}</div>`)
+}
+function openSettings(){modal(`<div class="sheethead"><h2>设置</h2><button class="iconbtn" onclick="closeModal()">✕</button></div><div class="note">v0.6 重点先重构使用逻辑，外观设置后续继续完善。</div>`)}
+
+let scanFile=null;
+function openScan(){modal(`<div class="sheethead"><h2>拍照摘录经文</h2><button class="iconbtn" onclick="closeModal()">✕</button></div><input type="file" accept="image/*" capture="environment" onchange="scanFile=this.files[0]"><div class="actions"><button class="primary" onclick="runScan()">开始识别</button></div><div id="scanStatus" class="note"></div><div id="scanOut" style="display:none"><textarea id="scanText"></textarea><input id="scanRef" placeholder="出处"><div class="actions"><button class="primary" onclick="saveScan()">保存为今天的经文</button></div></div>`)}
+async function runScan(){
+  if(!scanFile)return alert('请先选择照片');
+  document.getElementById('scanStatus').textContent='正在识别…';
+  try{
+    let text='',reference='',url=db.settings.ocrBackendUrl;
+    if(url){try{let fd=new FormData();fd.append('image',scanFile);let r=await fetch(url,{method:'POST',body:fd});let d=await r.json();text=d.text||d.ocrText||'';reference=d.reference||''}catch(e){}}
+    if(!text){let w=await Tesseract.createWorker(['chi_sim','eng']);let r=await w.recognize(scanFile);text=r.data.text||'';await w.terminate()}
+    document.getElementById('scanText').value=text.trim();document.getElementById('scanRef').value=reference;document.getElementById('scanOut').style.display='block';document.getElementById('scanStatus').textContent='识别完成，请核对后再保存。'
+  }catch(e){document.getElementById('scanStatus').textContent='识别失败。'}
+}
+function saveScan(){db.verses.push({id:uid(),date:today(),text:val('scanText'),reference:val('scanRef'),tags:'',note:'',source:'ocr',createdAt:new Date().toISOString()});save();closeModal()}
+
+function exportData(){let a=document.createElement('a'),b=new Blob([JSON.stringify(db,null,2)],{type:'application/json'});a.href=URL.createObjectURL(b);a.download='spiritual-journal-backup-'+today()+'.json';a.click()}
+function importData(e){let r=new FileReader();r.onload=()=>{try{db=migrate(JSON.parse(r.result));save();alert('导入完成')}catch(_){alert('文件格式不正确')}};r.readAsText(e.target.files[0])}
+function renderAll(){renderToday();renderBible();renderQuestions();renderPrayers();if(document.getElementById('backend'))document.getElementById('backend').value=db.settings.ocrBackendUrl||''}
+if('serviceWorker'in navigator)navigator.serviceWorker.register('./service-worker.js').catch(()=>{});
 renderAll();
 </script>
 </body>
